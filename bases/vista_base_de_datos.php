@@ -14,21 +14,17 @@ $resultCargo = mysqli_query($con, $sqlCargo);
 $sqlCliente = "SELECT * FROM Cliente";
 $resultCliente = mysqli_query($con, $sqlCliente);
 
-// Consulta para obtener los datos de la tabla Servicio
-//$sqlServicio = "SELECT * FROM Servicio";
-//$resultServicio = mysqli_query($con, $sqlServicio);
-
 // Consulta para obtener los datos de la tabla Producto
 $sqlProducto = "SELECT * FROM Producto";
 $resultProducto = mysqli_query($con, $sqlProducto);
 
+// Consulta para obtener los datos de la tabla ProductoTipo
+$sqlProductoTipo = "SELECT * FROM Producto_Tipo";
+$resultProductoTipo = mysqli_query($con, $sqlProductoTipo);
+
 // Consulta para obtener los datos de la tabla Proveedor
 $sqlProveedor = "SELECT * FROM Proveedor";
 $resultProveedor = mysqli_query($con, $sqlProveedor);
-
-// Consulta para obtener los datos de la tabla Residencia
-//$sqlResidencia = "SELECT * FROM Residencia";
-//$resultResidencia = mysqli_query($con, $sqlResidencia);
 
 // Consulta para obtener los datos de la tabla Telefono
 $sqlTelefono = "SELECT * FROM Telefono";
@@ -43,20 +39,8 @@ $sqlPago = "SELECT * FROM Pago";
 $resultPago = mysqli_query($con, $sqlPago);
 
 // Consulta para obtener los datos de la tabla CalificacionServicio
-//$sqlCalificacionServicio = "SELECT * FROM CalificacionServicio";
-//$resultCalificacionServicio = mysqli_query($con, $sqlCalificacionServicio);
-
-// Consulta para obtener los datos de la tabla Servicio_Has_Cita
-//$sqlServicioHasCita = "SELECT * FROM Servicio_Has_Cita";
-//$resultServicioHasCita = mysqli_query($con, $sqlServicioHasCita);
-
-// Consulta para obtener los datos de la tabla Producto_Has_Proveedor
-//$sqlProductoHasProveedor = "SELECT * FROM Producto_Has_Proveedor";
-//$resultProductoHasProveedor = mysqli_query($con, $sqlProductoHasProveedor);
-
-// Consulta para obtener los datos de la tabla Empleado_Has_Producto
-//$sqlEmpleadoHasProducto = "SELECT * FROM Empleado_Has_Producto";
-//$resultEmpleadoHasProducto = mysqli_query($con, $sqlEmpleadoHasProducto);
+$sqlCalificacion = "SELECT * FROM Calificacion";
+$resultCalificacion = mysqli_query($con, $sqlCalificacion);
 
 // Consulta para obtener los datos de la tabla Inventario
 $sqlInventario = "SELECT * FROM Inventario";
@@ -65,9 +49,8 @@ $resultInventario = mysqli_query($con, $sqlInventario);
 
 
 if (!$resultEmpleado || !$resultCargo || !$resultCliente||
-    /*!$resultServicio ||*/ !$resultProducto || !$resultProveedor || /*!$resultResidencia ||*/ !$resultTelefono ||
-    !$resultCita || !$resultPago || /*!$resultCalificacionServicio || !$resultServicioHasCita ||*/
-    /*!$resultProductoHasProveedor || !$resultEmpleadoHasProducto ||*/ !$resultInventario
+    !$resultProducto || !$resultProveedor || !$resultTelefono ||
+    !$resultCita || !$resultPago || !$resultCalificacion || !$resultInventario
 ) {
     die("Error en la consulta: " . mysqli_error($con));
 }
@@ -154,7 +137,7 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
 
     <div class="container">
     <!-- Encabezado -->
-        <h1 class="mt-5">Información de la Tabla Empleado</h1>
+        <h1 class="mt-5">Información de la tabla Empleado</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -185,7 +168,7 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                 </tbody>
             </table>
         </div>
-        <h1 class="mt-5">Información de la Tabla Cargo</h1>
+        <h1 class="mt-5">Información de la tabla Cargo</h1>
 
         <div class="table-responsive">
             <table class="table table-striped">
@@ -206,17 +189,18 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
             </table>
         </div>
         
-        <h1 class="mt-5">Información de la Tabla Cliente</h1>
+        <h1 class="mt-5">Información de la tabla Cliente</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID Cliente</th>
-                        <th>Nombre 1</th>
-                        <th>Apellido 1</th>
+                        <th>Primer Nombre</th>
+                        <th>Segundo Nombre</th>
+                        <th>Primer Apellido</th>
+                        <th>Segundo Apellido</th>
                         <th>Fecha Nacimiento</th>
-                        <th>Enfermedades</th>
-                        <th>Alergias</th>
+                        <th>Residencia</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -224,19 +208,18 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                         <tr>
                             <td><?= $row['id_Cliente'] ?></td>
                             <td><?= $row['nombre01'] ?></td>
+                            <td><?= $row['nombre02'] ?></td>
                             <td><?= $row['apellido01'] ?></td>
+                            <td><?= $row['apellido02'] ?></td>
                             <td><?= $row['fecha_nacimiento'] ?></td>
-                            <td><?= $row['enfermedades'] ?></td>
-                            <td><?= $row['alergias'] ?></td>
+                            <td><?= $row['residencia'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
 
-        
-
-        <h1 class="mt-5">Información de la Tabla Producto o Servicio</h1>
+        <h1 class="mt-5">Información de la tabla Producto</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -261,8 +244,28 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                 </tbody>
             </table>
         </div>
+
+        <h1 class="mt-5">Información de la tabla ProductoTipo</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>ID Tipo Producto</td>
+                        <td>Tipo (Producto o Servicio)</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultProductoTipo)): ?>
+                        <tr>
+                            <td><?= $row['id_Producto_Tipo']?></td>
+                            <td><?= $row['tipo']?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
         
-        <h1 class="mt-5">Información de la Tabla Proveedor</h1>
+        <h1 class="mt-5">Información de la tabla Proveedor</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -284,48 +287,31 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
             </table>
         </div>
 
-        <h1 class="mt-5">Información de la Tabla Residencia</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID Residencia</th>
-                        <th>ID Cliente</th>
-                        <th>ID Empleado</th>
-                        <th>Nombre Residencia</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
-        </div>
-
-        <h1 class="mt-5">Información de la Tabla Telefono</h1>
+        <h1 class="mt-5">Información de la tabla Telefono</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID Telefono</th>
+                        <th>Número</th>
                         <th>ID Empleado</th>
                         <th>ID Cliente</th>
-                        <th>Número</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($resultTelefono)): ?>
                         <tr>
                             <td><?= $row['id_Telefono'] ?></td>
+                            <td><?= $row['numero'] ?></td>
                             <td><?= $row['id_Empleado'] ?></td>
                             <td><?= $row['id_Cliente'] ?></td>
-                            <td><?= $row['numero'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
 
-        <h1 class="mt-5">Información de la Tabla Cita</h1>
+        <h1 class="mt-5">Información de la tabla Cita</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -351,26 +337,26 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
             </table>
         </div>
 
-        <h1 class="mt-5">Información de la Tabla Pago</h1>
+        <h1 class="mt-5">Información de la tabla Pago</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID Pago</th>
-                        <th>ID Cita</th>
+                        <th>monto</th>
+                        <th>Fecha</th>
+                        <th>ID FacturaVenta</th>
                         <th>ID Cliente</th>
-                        <th>Total Pago</th>
-                        <th>Fecha Pago</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($resultPago)): ?>
                         <tr>
                             <td><?= $row['id_Pago'] ?></td>
-                            <td><?= $row['id_Cita'] ?></td>
+                            <td><?= $row['monto'] ?></td>
+                            <td><?= $row['fecha'] ?></td>
+                            <td><?= $row['id_FacturaVenta'] ?></td>
                             <td><?= $row['id_Cliente'] ?></td>
-                            <td><?= $row['total_Pago'] ?></td>
-                            <td><?= $row['fecha_pago'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -378,100 +364,42 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
         </div>
 
         
-        <h1 class="mt-5">Información de la Tabla CalificacionServicio</h1>
+        <h1 class="mt-5">Información de la tabla Calificación</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID CalificacionServicio</th>
+                        <th>ID Calificacion</th>
                         <th>Calificación</th>
-                        <th>ID Cliente</th>
-                        <th>ID Servicio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultCalificacionServicio)): ?>
-                        <tr>
-                            <td><?= $row['id_CalificacionServicio'] ?></td>
-                            <td><?= $row['calificacion'] ?></td>
-                            <td><?= $row['id_Cliente'] ?></td>
-                            <td><?= $row['id_Servicio'] ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <h1 class="mt-5">Información de la Tabla Servicio_Has_Cita</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
                         <th>ID Cita</th>
-                        <th>ID Servicio</th>
+                        <th>Descripcion</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultServicioHasCita)): ?>
+                    <?php while ($row = mysqli_fetch_assoc($resultCalificacion)): ?>
                         <tr>
+                            <td><?= $row['id_Calificacion'] ?></td>
+                            <td><?= $row['calificacion'] ?></td>
                             <td><?= $row['id_Cita'] ?></td>
-                            <td><?= $row['id_Servicio'] ?></td>
+                            <td><?= $row['descripcion'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
 
-        <!-- Información de la Tabla Producto_Has_Proveedor -->
-        <h1 class="mt-5">Información de la Tabla Producto_Has_Proveedor</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID Producto</th>
-                        <th>ID Proveedor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultProductoHasProveedor)): ?>
-                        <tr>
-                            <td><?= $row['id_Producto'] ?></td>
-                            <td><?= $row['id_Proveedor'] ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Información de la Tabla Empleado_Has_Producto -->
-        <h1 class="mt-5">Información de la Tabla Empleado_Has_Producto</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID Producto</th>
-                        <th>ID Empleado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultEmpleadoHasProducto)): ?>
-                        <tr>
-                            <td><?= $row['id_Producto'] ?></td>
-                            <td><?= $row['id_Empleado'] ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
         <!-- Información de la Tabla Inventario -->
-        <h1 class="mt-5">Información de la Tabla Inventario</h1>
+        <h1 class="mt-5">Información de la tabla Inventario</h1>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID Inventario</th>
                         <th>ID Producto</th>
-                        <th>Cantidad de Producto</th>
+                        <th>Cantidad</th>
+                        <th>Fecha Movimiento</th>
+                        <th>ID Movimiento</th>
+                        <th>ID Detalle de FacturaCompra</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -479,7 +407,10 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                         <tr>
                             <td><?= $row['id_Inventario'] ?></td>
                             <td><?= $row['id_Producto'] ?></td>
-                            <td><?= $row['cant_Producto'] ?></td>
+                            <td><?= $row['cantidad'] ?></td>
+                            <td><?= $row['fecha_movimiento'] ?></td>
+                            <td><?= $row['id_Movimiento'] ?></td>
+                            <td><?= $row['id_FacturaCompra_Detalle'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
