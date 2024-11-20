@@ -184,7 +184,7 @@ if (!$query_productos) {
                         <option value="" disabled selected>Seleccionar cliente</option>
                         <?php while ($cliente = mysqli_fetch_assoc($query_clientes)): ?>
                             <option value="<?= $cliente['id_Cliente'] ?>">
-                            <?= $cliente['id_Cliente'] . ' - ' . $cliente['nombre01'] . ' ' . $cliente['nombre02'] . ' ' . $cliente['apellido01'] . ' ' . $cliente['apellido2'] ?>
+                            <?= $cliente['id_Cliente'] . ' - ' . $cliente['nombre01'] . ' ' . $cliente['nombre02'] . ' ' . $cliente['apellido01'] . ' ' . $cliente['apellido02'] ?>
                             </option>
                         <?php endwhile; ?>
                     </select>

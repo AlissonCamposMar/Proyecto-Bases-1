@@ -2,6 +2,9 @@
 include('conexion.php');
 $con = connection();
 
+// Consulta para obtener los datos de la tabla Administrador
+$sqlAdministrador = 'SELECT * FROM Administrador';
+$resultAdministrador = mysqli_query($con, $sqlAdministrador);
 // Consulta para obtener los datos de la tabla Empleado
 $sqlEmpleado = "SELECT * FROM Empleado";
 $resultEmpleado = mysqli_query($con, $sqlEmpleado);
@@ -13,6 +16,18 @@ $resultCargo = mysqli_query($con, $sqlCargo);
 // Consulta para obtener los datos de la tabla Cliente
 $sqlCliente = "SELECT * FROM Cliente";
 $resultCliente = mysqli_query($con, $sqlCliente);
+
+$sqlClienteAlergia = "SELECT * FROM ClienteAlergia";
+$resultClienteAlergia = mysqli_query($con, $sqlClienteAlergia);
+
+$sqlClienteEnfermedad = "SELECT *FROM ClienteEnfermedad";
+$resultClienteEnfermedad = mysqli_query($con, $sqlClienteEnfermedad);
+
+$sqlAlergia = "SELECT * FROM Alergia";
+$resultAlergia = mysqli_query($con, $sqlAlergia);
+
+$sqlEnfermedad = "SELECT * FROM Enfermedad";
+$resultEnfermedad = mysqli_query($con, $sqlEnfermedad);
 
 // Consulta para obtener los datos de la tabla Producto
 $sqlProducto = "SELECT * FROM Producto";
@@ -48,9 +63,9 @@ $resultInventario = mysqli_query($con, $sqlInventario);
 
 
 
-if (!$resultEmpleado || !$resultCargo || !$resultCliente||
-    !$resultProducto || !$resultProveedor || !$resultTelefono ||
-    !$resultCita || !$resultPago || !$resultCalificacion || !$resultInventario
+if (!$resultAdministrador || !$resultEmpleado || !$resultCargo || !$resultCliente|| !$resultClienteAlergia || !$resultClienteEnfermedad ||
+   !$resultAlergia || !$resultEnfermedad || !$resultProducto || !$resultProductoTipo || !$resultProveedor || !$resultTelefono ||
+   !$resultCita || !$resultPago || !$resultCalificacion || !$resultInventario
 ) {
     die("Error en la consulta: " . mysqli_error($con));
 }
@@ -136,7 +151,28 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
 <body>
 
     <div class="container">
-    <!-- Encabezado -->
+        <!-- Encabezado -->
+        <h1 class="mt-5">Información de la tabla Administrador</h1>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Administrador</th>
+                        <th>Nombre Administrador</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultAdministrador)): ?>
+                        <tr>
+                            <td><?= $row['id_Administrador'] ?></td>
+                            <td><?= $row['nombreAdministrador'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
         <h1 class="mt-5">Información de la tabla Empleado</h1>
         <div class="table-responsive">
             <table class="table table-striped">
@@ -213,6 +249,90 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                             <td><?= $row['apellido02'] ?></td>
                             <td><?= $row['fecha_nacimiento'] ?></td>
                             <td><?= $row['residencia'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <h1 class="mt-5">Información de la tabla Cliente-Alergia</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID ClienteAlergia</th>
+                        <th>ID Cliente</th>
+                        <th>ID Alergia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultClienteAlergia)): ?>
+                        <tr>
+                            <td><?= $row['id_ClienteAlergia'] ?></td>
+                            <td><?= $row['id_Cliente'] ?></td>
+                            <td><?= $row['id_Alergia'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+        
+        <h1 class="mt-5">Información de la tabla Cliente-Enfermedad</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID ClienteEnfermedad</th>
+                        <th>ID Cliente</th>
+                        <th>ID Enfermedad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultClienteEnfermedad)): ?>
+                        <tr>
+                            <td><?= $row['id_ClienteEnfermedad'] ?></td>
+                            <td><?= $row['id_Cliente'] ?></td>
+                            <td><?= $row['id_Enfermedad'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <h1 class="mt-5">Información de la tabla Alergia</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Alergia</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultAlergia)): ?>
+                        <tr>
+                            <td><?= $row['id_Alergia'] ?></td>
+                            <td><?= $row['nombre'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <h1 class="mt-5">Información de la tabla Enfermedad</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Alergia</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($resultEnfermedad)): ?>
+                        <tr>
+                            <td><?= $row['id_Enfermedad'] ?></td>
+                            <td><?= $row['nombre'] ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -416,6 +536,8 @@ if (!$resultEmpleado || !$resultCargo || !$resultCliente||
                 </tbody>
             </table>
         </div>
+
+        
     </div>
 
 

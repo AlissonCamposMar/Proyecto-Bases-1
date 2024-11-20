@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nombre01_editar = $_POST['nombre01_editar'];
         $nombre02_editar = $_POST['nombre02_editar'];
         $apellido01_editar = $_POST['apellido01_editar'];
-        $apellido2_editar = $_POST['apellido2_editar'];
+        $apellido02_editar = $_POST['apellido02_editar'];
         $correo_electronico_editar = $_POST['correo_electronico_editar'];
         $salario_editar = $_POST['salario_editar'];
         $numero_editar = $_POST['numero_editar'];
@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                    SET nombre01 = '$nombre01_editar',
                                         nombre02 = '$nombre02_editar',
                                        apellido01 = '$apellido01_editar',
-                                       apellido2 = '$apellido2_editar',
+                                       apellido02 = '$apellido02_editar',
                                        correo_electronico = '$correo_electronico_editar',
                                        salario = '$salario_editar',
                                        id_Cargo = '$cargo_editar'
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nombre01 = $_POST['nombre01'];
         $nombre02 = $_POST['nombre02'];
         $apellido01 = $_POST['apellido01'];
-        $apellido2 = $_POST['apellido2'];
+        $apellido02 = $_POST['apellido02'];
         $correo_electronico = $_POST['correo_electronico'];
         $salario = $_POST['salario'];
         $id_Cargo = $_POST['id_Cargo'];
@@ -121,8 +121,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
 
         // Insertar en la tabla empleado
-$sql_Empleado = "INSERT INTO Empleado (id_Empleado, nombre01, nombre02, apellido01, apellido2, correo_electronico, salario, id_Cargo, residencia) 
-VALUES ('$id_Empleado_insertado', '$nombre01', '$nombre02', '$apellido01', '$apellido2', '$correo_electronico', '$salario', '$id_Cargo', '$residencia')";
+$sql_Empleado = "INSERT INTO Empleado (id_Empleado, nombre01, nombre02, apellido01, apellido02, correo_electronico, salario, id_Cargo, residencia) 
+VALUES ('$id_Empleado_insertado', '$nombre01', '$nombre02', '$apellido01', '$apellido02', '$correo_electronico', '$salario', '$id_Cargo', '$residencia')";
 
 $result_Empleado = mysqli_query($con, $sql_Empleado);
 
@@ -240,7 +240,7 @@ if (!$query_cargos) {
             <input type="text" name="nombre01" placeholder="Primer Nombre">
             <input type="text" name="nombre02" placeholder="Segundo Nombre">
             <input type="text" name="apellido01" placeholder="Primer Apellido">
-            <input type="text" name="apellido2" placeholder="Segundo Apellido">
+            <input type="text" name="apellido02" placeholder="Segundo Apellido">
             <input type="text" name="correo_electronico" placeholder="Correo electronico">           
             <input type="text" name="salario" placeholder="Salario">
             <input type="text" name="residencia" placeholder="Residencia">
@@ -275,7 +275,7 @@ if (!$query_cargos) {
                             <td><?= $row['nombre01'] ?></td>
                             <td><?= $row['nombre02'] ?></td>
                             <td><?= $row['apellido01'] ?></td>
-                            <td><?= $row['apellido2'] ?></td>
+                            <td><?= $row['apellido02'] ?></td>
                             <td><?= $row['correo_electronico'] ?></td>
                             <td><?= $row['salario'] ?></td>
                             <td><?= $row['numero'] ?></td>
@@ -302,16 +302,16 @@ if (!$query_cargos) {
             // Obtener datos del cliente, teléfono y residencia para prellenar el formulario
             $id_Empleado_editar = $_GET['editar'];
             $sql_editar = "SELECT empleado.*, telefono.numero, cargo.nombre
-            FROM empleado
-            LEFT JOIN telefono ON empleado.id_Empleado = telefono.id_Empleado
-            LEFT JOIN cargo ON empleado.id_Cargo = cargo.id_Cargo
-            WHERE empleado.id_Empleado = '$id_Empleado_editar'";
+                            FROM empleado
+                            LEFT JOIN telefono ON empleado.id_Empleado = telefono.id_Empleado
+                            LEFT JOIN cargo ON empleado.id_Cargo = cargo.id_Cargo
+                            WHERE empleado.id_Empleado = '$id_Empleado_editar'";
             $result_editar = mysqli_query($con, $sql_editar);
             $empleado_editar = mysqli_fetch_assoc($result_editar);
             ?>
             <div>
-                <h2>Editar Empleado - ID <?= $empleado_editar['id_Empleado'] ?></h2>
-                <form method="post" action="">
+                <h2 class="mt-4 mb-2">Editar Empleado - ID <?= $empleado_editar['id_Empleado'] ?></h2>
+                <form method="post" action="" class="mb-4">
                     <label for="cargo_editar">Cargo:</label>
                     <select name="cargo_editar">
                         <?php
@@ -340,8 +340,8 @@ if (!$query_cargos) {
                     <label for="apellido01_editar">Primer Apellido:</label>
                     <input type="text" name="apellido01_editar" value="<?= $empleado_editar['apellido01'] ?>">
                     
-                    <label for="apellido2_editar">Segundo Apellido:</label>
-                    <input type="text" name="apellido2_editar" value="<?= $empleado_editar['apellido2'] ?>">
+                    <label for="apellid0o2_editar">Segundo Apellido:</label>
+                    <input type="text" name="apellido02_editar" value="<?= $empleado_editar['apellido02'] ?>">
                     
                     <label for="correo_electronico_editar">Correo Electronico:</label>
                     <input type="text" name="correo_electronico_editar" value="<?= $empleado_editar['correo_electronico'] ?>">

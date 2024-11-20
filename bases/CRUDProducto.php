@@ -152,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Realiza la consulta para obtener los productos
             $query_productos = mysqli_query($con, "SELECT id_Producto, nombre, descripcion, precio, tipo 
                                                    FROM producto  
-                                                   JOIN producto_tipo  ON id_Producto_Tipo = id_Producto_Tipo");
+                                                   JOIN producto_tipo  ON producto.id_Producto_Tipo = producto_tipo.id_Producto_Tipo");
             // Iteramos sobre los resultados de los productos
             while ($row = mysqli_fetch_array($query_productos)): ?>
                 <tr>

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-11-2024 a las 04:31:28
+-- Tiempo de generación: 20-11-2024 a las 23:57:10
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -141,7 +141,7 @@ CREATE TABLE `cliente` (
   `nombre01` varchar(50) NOT NULL COMMENT 'Primer nombre del cliente',
   `nombre02` varchar(50) DEFAULT NULL COMMENT 'Segundo nombre del cliente',
   `apellido01` varchar(50) NOT NULL COMMENT 'Primer apellido del cliente',
-  `apellido2` varchar(50) DEFAULT NULL COMMENT 'Segundo apellido del cliente',
+  `apellido02` varchar(50) DEFAULT NULL COMMENT 'Segundo apellido del cliente',
   `fecha_nacimiento` date NOT NULL COMMENT 'Fecha de nacimiento del cliente',
   `residencia` varchar(50) NOT NULL COMMENT 'Residencia del cliente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -150,11 +150,10 @@ CREATE TABLE `cliente` (
 -- Volcado de datos para la tabla `cliente`
 --
 
-INSERT INTO `cliente` (`id_Cliente`, `nombre01`, `nombre02`, `apellido01`, `apellido2`, `fecha_nacimiento`, `residencia`) VALUES
+INSERT INTO `cliente` (`id_Cliente`, `nombre01`, `nombre02`, `apellido01`, `apellido02`, `fecha_nacimiento`, `residencia`) VALUES
 (1, 'Alisson', 'Camila', 'Campos', 'Puertas', '2001-11-16', 'Calle 14 # 20-31'),
 (2, 'Santiago', 'Alberto', 'Trujillo', 'Patiño', '2003-01-29', 'Calle 9 # 20-27'),
-(3, 'Esteban', 'Camilo', 'Idarraga', 'Campos', '1999-11-15', 'Calle 2 # 14-06'),
-(4, 'Luisa', 'Fernanda', 'Arango', 'Idarraga', '2024-11-28', 'Barrio libertadores');
+(3, 'Esteban', 'Camilo', 'Idarraga', 'Campos', '1999-11-15', 'Calle 2 # 14-06');
 
 -- --------------------------------------------------------
 
@@ -210,7 +209,7 @@ CREATE TABLE `empleado` (
   `nombre01` varchar(50) NOT NULL COMMENT 'Primer nombre del empleado',
   `nombre02` varchar(50) DEFAULT NULL COMMENT 'Segundo nombre del empleado',
   `apellido01` varchar(50) NOT NULL COMMENT 'Primer nombre del empleado',
-  `apellido2` varchar(50) DEFAULT NULL COMMENT 'Segundo nombre del empleado',
+  `apellido02` varchar(50) DEFAULT NULL COMMENT 'Segundo nombre del empleado',
   `salario` float NOT NULL COMMENT 'Salario del empleado',
   `correo_electronico` varchar(100) DEFAULT NULL COMMENT 'Correo electrónico del empleado',
   `id_Cargo` int(11) NOT NULL COMMENT 'Relación con la tabla de cargos',
@@ -221,7 +220,7 @@ CREATE TABLE `empleado` (
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`id_Empleado`, `identificacion`, `nombre01`, `nombre02`, `apellido01`, `apellido2`, `salario`, `correo_electronico`, `id_Cargo`, `residencia`) VALUES
+INSERT INTO `empleado` (`id_Empleado`, `identificacion`, `nombre01`, `nombre02`, `apellido01`, `apellido02`, `salario`, `correo_electronico`, `id_Cargo`, `residencia`) VALUES
 (1, '1008444442', 'Juan', 'José', 'Cardona', 'Cortes', 12000000, 'juanj@email.com', 1, 'Calle 5 Mz 3 # 02');
 
 -- --------------------------------------------------------
@@ -242,7 +241,7 @@ CREATE TABLE `enfermedad` (
 INSERT INTO `enfermedad` (`id_Enfermedad`, `nombre`) VALUES
 (10, 'Alopecia'),
 (7, 'Diabetes'),
-(1, 'no se sabe'),
+(1, 'ninguna'),
 (2, 'Tiroidess');
 
 -- --------------------------------------------------------
@@ -548,10 +547,10 @@ INSERT INTO `telefono` (`id_Telefono`, `numero`, `id_Empleado`, `id_Cliente`) VA
 (17, '3107281790', NULL, NULL),
 (18, '3107281790', NULL, NULL),
 (19, '3107281790', NULL, NULL),
-(24, '3235698974', NULL, 4),
 (30, '315896542', NULL, 2),
 (31, '326986589', NULL, 3),
-(39, '3692581470', 1, NULL);
+(39, '3692581470', 1, NULL),
+(42, '98767899', NULL, 1);
 
 --
 -- Índices para tablas volcadas
@@ -763,7 +762,7 @@ ALTER TABLE `cita`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id_Cliente` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de clientes', AUTO_INCREMENT=9;
+  MODIFY `id_Cliente` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de clientes', AUTO_INCREMENT=39844;
 
 --
 -- AUTO_INCREMENT de la tabla `clientealergia`
@@ -775,7 +774,7 @@ ALTER TABLE `clientealergia`
 -- AUTO_INCREMENT de la tabla `clienteenfermedad`
 --
 ALTER TABLE `clienteenfermedad`
-  MODIFY `id_ClienteEnfermedad` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y enfermedades', AUTO_INCREMENT=9;
+  MODIFY `id_ClienteEnfermedad` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y enfermedades', AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
@@ -865,7 +864,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `telefono`
 --
 ALTER TABLE `telefono`
-  MODIFY `id_Telefono` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la tabla telefonos', AUTO_INCREMENT=42;
+  MODIFY `id_Telefono` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la tabla telefonos', AUTO_INCREMENT=46;
 
 --
 -- Restricciones para tablas volcadas

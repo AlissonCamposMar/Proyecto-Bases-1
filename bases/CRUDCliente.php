@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nombre01_editar = $_POST['nombre01_editar'];
         $nombre02_editar = $_POST['nombre02_editar'];
         $apellido01_editar = $_POST['apellido01_editar'];
-        $apellido2_editar = $_POST['apellido2_editar'];
+        $apellido02_editar = $_POST['apellido02_editar'];
         $fecha_nacimiento_editar = $_POST['fecha_nacimiento_editar'];
         $residencia_editar = $_POST['residencia_editar'];
         $numero_editar = $_POST['numero_editar'];
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Actualizar datos en la tabla cliente
         $sql_actualizar_cliente = "UPDATE cliente
                                    SET nombre01 = '$nombre01_editar',nombre02 = '$nombre02_editar',
-                                       apellido01 = '$apellido01_editar',apellido2 = '$apellido2_editar',
+                                       apellido01 = '$apellido01_editar',apellido02 = '$apellido02_editar',
                                        fecha_nacimiento = '$fecha_nacimiento_editar',
                                        residencia = '$residencia_editar'
                                    WHERE id_Cliente = '$id_Cliente_editar'";
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Actualizar datos en la tabla telefono
         $sql_actualizar_telefono = "UPDATE telefono
-                                     SET nombre = '$numero_editar'
+                                     SET numero = '$numero_editar'
                                      WHERE id_Cliente = '$id_Cliente_editar'";
         $result_actualizar_telefono = mysqli_query($con, $sql_actualizar_telefono);
 
@@ -116,13 +116,15 @@ if ($result_actualizar_alergia) {
         // Lógica de eliminación
         $id_Cliente_eliminar = $_POST['id_Cliente_eliminar'];
 
+        // Eliminar datos de la tabla telefono
+        $sql_eliminar_telefono = "DELETE FROM telefono WHERE id_Cliente = '$id_Cliente_eliminar'";
+        $result_eliminar_telefono = mysqli_query($con, $sql_eliminar_telefono);
+
+
         // Eliminar datos de la tabla cliente
         $sql_eliminar_cliente = "DELETE FROM cliente WHERE id_Cliente = '$id_Cliente_eliminar'";
         $result_eliminar_cliente = mysqli_query($con, $sql_eliminar_cliente);
 
-        // Eliminar datos de la tabla telefono
-        $sql_eliminar_telefono = "DELETE FROM telefono WHERE id_Cliente = '$id_Cliente_eliminar'";
-        $result_eliminar_telefono = mysqli_query($con, $sql_eliminar_telefono);
 
         // Eliminar datos de la tabla enfermedad
         $sql_eliminar_cliente_enfermedad = "DELETE FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_eliminar'";
@@ -138,7 +140,7 @@ if ($result_actualizar_alergia) {
         }
     } else {
           // Verificar que todos los campos obligatorios están llenos
-    $required_fields = ['id_Cliente', 'nombre01','nombre02', 'apellido01','apellido2', 'fecha_nacimiento','residencia','telefono'];
+    $required_fields = ['id_Cliente', 'nombre01', 'apellido01', 'fecha_nacimiento','residencia','telefono'];
 
     foreach ($required_fields as $field) {
         if (empty($_POST[$field])) {
@@ -153,7 +155,7 @@ if ($result_actualizar_alergia) {
         $nombre01 = $_POST['nombre01'];
         $nombre02 = $_POST['nombre02'];
         $apellido01 = $_POST['apellido01'];
-        $apellido2 = $_POST['apellido2'];
+        $apellido02 = $_POST['apellido02'];
         $fecha_nacimiento = $_POST['fecha_nacimiento'];
         $residencia = $_POST['residencia'];
         $numero = $_POST['telefono'];
@@ -161,8 +163,8 @@ if ($result_actualizar_alergia) {
         $alergia = $_POST['alergia'];
 
         // Insertar en la tabla cliente
-        $sql_cliente = "INSERT INTO cliente (id_Cliente, nombre01, nombre02, apellido01, apellido2, fecha_nacimiento, residencia) 
-                        VALUES ('$id_Cliente', '$nombre01', '$nombre02', '$apellido01', '$apellido2', '$fecha_nacimiento', '$residencia')";
+        $sql_cliente = "INSERT INTO cliente (id_Cliente, nombre01, nombre02, apellido01, apellido02, fecha_nacimiento, residencia) 
+                        VALUES ('$id_Cliente', '$nombre01', '$nombre02', '$apellido01', '$apellido02', '$fecha_nacimiento', '$residencia')";
         $result_cliente = mysqli_query($con, $sql_cliente);
 
         //Insertar en la tabla telefono
@@ -277,15 +279,15 @@ if (!$query) {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="nombre02">Segundo Nombre</label>
-                    <input type="text" name="nombre02" class="form-control" placeholder="Segundo Nombre" required>
+                    <input type="text" name="nombre02" class="form-control" placeholder="Segundo Nombre">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="apellido01">Primer Apellido</label>
                     <input type="text" name="apellido01" class="form-control" placeholder="Primer Apellido" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="apellido2">Segundo Apellido</label>
-                    <input type="text" name="apellido2" class="form-control" placeholder="Segundo Apellido" required>
+                    <label for="apellido02">Segundo Apellido</label>
+                    <input type="text" name="apellido02" class="form-control" placeholder="Segundo Apellido">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="fecha_nacimiento">Fecha de nacimiento:</label>
@@ -338,7 +340,7 @@ if (!$query) {
                             <td><?= $row['nombre01'] ?></td>
                             <td><?= $row['nombre02'] ?></td>
                             <td><?= $row['apellido01'] ?></td>
-                            <td><?= $row['apellido2'] ?></td>
+                            <td><?= $row['apellido02'] ?></td>
                             <td><?= $row['fecha_nacimiento'] ?></td>
                             <td><?= $row['residencia'] ?></td>
                             <td><?= $row['numero'] ?></td>
@@ -400,8 +402,8 @@ if (!$query) {
                             <input type="text" name="apellido01_editar" class="form-control" value="<?= $cliente_editar['apellido01'] ?>" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="apellido2_editar">Segundo Apellido:</label>
-                            <input type="text" name="apellido2_editar" class="form-control" value="<?= $cliente_editar['apellido2'] ?>" required>
+                            <label for="apellido02_editar">Segundo Apellido:</label>
+                            <input type="text" name="apellido02_editar" class="form-control" value="<?= $cliente_editar['apellido02'] ?>" required>
                         </div>    
                         <div class="form-group col-md-6">
                             <label for="fecha_nacimiento_editar">Fecha de nacimiento:</label>
