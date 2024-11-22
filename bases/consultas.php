@@ -74,12 +74,11 @@
     </script>
 </head>
 <body>
-   
-
-        <div class="container">
+   <div class="container">
         <h1>Consultas</h1> <br> <br>
         <a href="Consultas_Simples.php">Consultas Simples</a><br>
         <a href="Consultas_Intermedias.php">Consultas Intermedias</a><br>
+        <a href="Consultas_Avanzadas.php">Consultas Avanzadas</a><br>
     </div>
 </body>
 </html>

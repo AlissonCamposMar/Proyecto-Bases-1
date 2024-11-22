@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     switch ($consulta) {
         case "1":
             $data = $_POST['data1']; // Usa los datos de la Consulta 1
-            $header = "Consulta 1: Clientes con diabetes nacidos antes del año 2000";
+            $header = "Consulta 1: Clientes ordenados por fecha de nacimiento de forma ascendente";
             break;
         case "2":
             $data = $_POST['data2']; // Usa los datos de la Consulta 2
@@ -20,8 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
         case "4":
             $data = $_POST['data4']; // Usa los datos de la Consulta 3
-            $header = "Consulta 4";
-            break;
+            $header = "Consulta 4: Cantidad de productos por tipo de producto";
             break;
         // Agrega más casos para otras consultas
     }
