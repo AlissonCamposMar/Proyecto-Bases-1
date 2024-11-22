@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Verificar que todos los campos obligatorios están llenos
-        $required_fields = ['fecha', 'duracion', 'empleado', 'cliente', 'producto'];
+        $required_fields = ['fecha', 'duracion', 'empleado', 'cliente', 'id_Producto'];
 
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
@@ -207,10 +207,10 @@ if (!$query_productos) {
                     <label for="fecha">Fecha:</label>
                     <input type="date" name="fecha" class="form-control" placeholder="AAAA/MM/DD" required>
                 </div>
-                <!-- Campo de hora -->
+                <!-- Campo de duración -->
                 <div class="form-group col-md-6">
                     <label for="duracion">Duración:</label>
-                    <input type="text" name="duracion" class="form-control" required>
+                    <input type="time" name="duracion" class="form-control" placeholder="00:00:00" required>
                 </div>
                 
 
@@ -230,7 +230,7 @@ if (!$query_productos) {
                             <th>Duración</th>
                             <th>Empleado</th>
                             <th>Cliente</th>
-                            <th>Servicio</th>
+                            <th>Producto</th>
                             <th colspan="2">Acciones</th>
                             
                         </tr>
@@ -336,33 +336,33 @@ if (!$query_productos) {
                             </select>
                         </div>
                         <div class="form-group col-md-6">
-        <label for="producto_editar">Servicio:</label>
-        <!-- Combo box con ID de producto -->
-        <select name="producto_editar" class="form-control">
-            <?php
-            // Obtener todos los productos
-            $query_productos = mysqli_query($con, "SELECT * FROM producto WHERE producto.id_producto_tipo=2");
+    <label for="producto_editar">Producto:</label>
+    <!-- Combo box con ID de producto -->
+    <select name="producto_editar" class="form-control">
+        <?php
+        // Obtener todos los productos
+        $query_productos = mysqli_query($con, "SELECT * FROM producto WHERE producto.id_producto_tipo=2");
+        
+        // Iterar sobre los productos para crear opciones
+        while ($producto = mysqli_fetch_assoc($query_productos)) {
+            // Comprobar si el producto es el actual del cita
+            $selected = ($producto['id_Producto'] == $cita_editar['id_Producto']) ? 'selected' : '';
             
-            // Iterar sobre los productos para crear opciones
-            while ($producto = mysqli_fetch_assoc($query_productos)) {
-                // Comprobar si el producto es el actual del cita
-                $selected = ($producto['id_Producto'] == $cita_editar['id_Producto']) ? 'selected' : '';
-                
-                // Concatenar el nombre del producto (o puedes agregar más detalles si lo deseas)
-                $nombre_producto = $producto['nombre'];  // Aquí puedes agregar más detalles si es necesario
-                
-                // Imprimir la opción
-                echo "<option value='{$producto['id_Producto']}' $selected>{$producto['id_Producto']} - {$nombre_producto}</option>";
-            }
-            ?>
-        </select>
-    </div>
+            // Concatenar el nombre del producto (o puedes agregar más detalles si lo deseas)
+            $nombre_producto = $producto['nombre'];  // Aquí puedes agregar más detalles si es necesario
+            
+            // Imprimir la opción
+            echo "<option value='{$producto['id_Producto']}' $selected>{$producto['id_Producto']} - {$nombre_producto}</option>";
+        }
+        ?>
+    </select>
+</div>
 
                         <input type="hidden" name="id_Cita_editar" value="<?= $cita_editar['id_Cita'] ?>">
                         <!-- Resto de los campos -->
                         <div class="form-group col-md-6">
                             <label for="fecha_editar">Fecha:</label>
-                            <input type="date" name="fecha_editar" class="form-control" value="<?= $cita_editar['fecha'] ?>">
+                            <input type="text" name="fecha_editar" class="form-control" value="<?= $cita_editar['fecha'] ?>">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="duracion_editar">Duración:</label>

@@ -4,28 +4,20 @@ require_once('fpdf/fpdf.php');
 $con = connection();
 
 
-// Consulta 1: Mostrar todos los clientes ordenados por fecha de nacimiento
-$query1 = "SELECT nombre01, apellido01, fecha_nacimiento 
-            FROM cliente 
-            ORDER BY fecha_nacimiento ASC;";
+// Consulta 1: Listar los clientes que tengan como enfermedad diabetes y hayan nacido antes del año 2000
+$query1 = "SELECT * FROM Cliente WHERE fecha_nacimiento < '2000-01-01'";
 
 $result1 = $con->query($query1);
 $data1 = $result1->fetch_all(MYSQLI_ASSOC);
 
 
 // Consulta 2: Listar los empleados que su salario sea mayor a 50000 y el nombre inicie por 'm'
-$query2 = "SELECT * 
-            FROM Empleado 
-            WHERE salario > 50000 
-            AND (nombre01 LIKE 'm%' OR nombre02 LIKE 'm%') 
-            ORDER BY salario DESC";
+$query2 = "SELECT * FROM Empleado WHERE salario > 50000 AND (nombre01 LIKE 'm%' OR nombre02 LIKE 'm%') ORDER BY salario DESC";
 $result2 = $con->query($query2);
 $data2 = $result2->fetch_all(MYSQLI_ASSOC);
 
 // Consulta 3: Listar las citas que hayan durado más de 1 hora
-$query3 = "SELECT id_Producto_Tipo, COUNT(*) as cantidad_productos 
-            FROM producto 
-            GROUP BY id_Producto_Tipo;";
+$query3 = "SELECT * FROM Cita WHERE duracion > '01:00:00'";
 
 $result3 = $con->query($query3);
 $data3 = $result3->fetch_all(MYSQLI_ASSOC);
@@ -84,28 +76,29 @@ $data3 = $result3->fetch_all(MYSQLI_ASSOC);
     <h1>Consultas Simples</h1>
 
     <h2>Consulta 1: </h2>
-    <h3> Mostrar todos los clientes ordenados por fecha de nacimiento de forma ascendente</h3>
+    <h3>Clientes con diabetes nacidos antes del año 2000</h3>
     <table border="1">
         <tr>
+            <th>ID Cliente</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Fecha de Nacimiento</th>
         </tr>
         <?php foreach ($data1 as $row): ?>
             <tr>
+                <td><?php echo $row['id_Cliente']; ?></td>
                 <td><?php echo $row['nombre01']; ?></td>
                 <td><?php echo $row['apellido01']; ?></td>
                 <td><?php echo $row['fecha_nacimiento']; ?></td>
             </tr>
         <?php endforeach; ?>
     </table>
-    
     <form method="post" action="generate_pdf.php">
         <input type="hidden" name="consulta" value="1">
         <input type="hidden" name="filename" value="consulta1.pdf">
         <?php foreach ($data1 as $row): ?>
             <?php foreach ($row as $key => $value): ?>
-                <input type="hidden" name="data1[<?php echo $row['nombre01']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
+                <input type="hidden" name="data1[<?php echo $row['id_Cliente']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
             <?php endforeach; ?>
         <?php endforeach; ?>
         <button type="submit" class="generate-pdf-button">Generar PDF</button>
@@ -142,31 +135,33 @@ $data3 = $result3->fetch_all(MYSQLI_ASSOC);
     </form>
     
     <h2>Consulta 3:</h2>
-    <h3>Cantidad de productos por tipo de producto</h3>
+<h3>Citas con duración superior a 1 hora</h3>
 
-    <table border="1">
+<table border="1">
+    <tr>
+        <th>ID Cita</th>
+        <th>Fecha</th>
+        <th>Duración</th>
+    </tr>
+    <?php foreach ($data3 as $row): ?>
         <tr>
-            <th>ID Tipo de Producto</th>
-            <th>Canditad de Productos</th>
+            <td><?php echo $row['id_Cita']; ?></td>
+            <td><?php echo $row['fecha']; ?></td>
+            <td><?php echo $row['duracion']; ?></td>
         </tr>
-        <?php foreach ($data3 as $row): ?>
-            <tr>
-                <td><?php echo $row['id_Producto_Tipo']; ?></td>
-                <td><?php echo $row['cantidad_productos']; ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
+    <?php endforeach; ?>
+</table>
 
-    <form method="post" action="generate_pdf.php">
-        <input type="hidden" name="consulta" value="3">
-        <input type="hidden" name="filename" value="consulta3.pdf">
-        <?php foreach ($data3 as $row): ?>
-            <?php foreach ($row as $key => $value): ?>
-                <input type="hidden" name="data3[<?php echo $row['id_Producto_Tipo']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
-            <?php endforeach; ?>
+<form method="post" action="generate_pdf.php">
+    <input type="hidden" name="consulta" value="3">
+    <input type="hidden" name="filename" value="consulta3.pdf">
+    <?php foreach ($data3 as $row): ?>
+        <?php foreach ($row as $key => $value): ?>
+            <input type="hidden" name="data3[<?php echo $row['id_Cita']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
         <?php endforeach; ?>
-        <button type="submit" class="generate-pdf-button">Generar PDF</button>
-    </form>
+    <?php endforeach; ?>
+    <button type="submit" class="generate-pdf-button">Generar PDF</button>
+</form>
 
 
 </body>

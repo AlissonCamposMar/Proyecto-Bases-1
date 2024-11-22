@@ -21,10 +21,10 @@ $result9 = $con->query($query9);
 
 if ($result9) {
     // Obtiene los resultados de la consulta
-    $data1 = $result9->fetch_all(MYSQLI_ASSOC);
+    $data9 = $result9->fetch_all(MYSQLI_ASSOC);
 
     // Verifica si hay resultados
-    if (empty($data1)) {
+    if (empty($data9)) {
         echo "No se encontraron clientes o citas.";
     } 
 } else {
@@ -49,10 +49,10 @@ $result10 = $con->query($query10);
 
 if ($result10) {
     // Obtiene los resultados de la consulta
-    $data2 = $result10->fetch_all(MYSQLI_ASSOC);
+    $data10 = $result10->fetch_all(MYSQLI_ASSOC);
 
     // Verifica si hay resultados
-    if (empty($data2)) {
+    if (empty($data10)) {
         echo "No se encontraron empleados o servicios.";
     } 
 } else {
@@ -75,10 +75,10 @@ $result11 = $con->query($query11);
 
 if ($result11) {
     // Obtiene los resultados de la consulta
-    $data3 = $result11->fetch_all(MYSQLI_ASSOC);
+    $data11 = $result11->fetch_all(MYSQLI_ASSOC);
 
     // Verifica si hay resultados
-    if (empty($data3)) {
+    if (empty($data11)) {
         echo "No se encontraron clientes o facturas.";
     } 
 } else {
@@ -147,7 +147,7 @@ if ($result11) {
         <th>Apellido del cliente</th>
         <th>Cantidad de Citas</th>
     </tr>
-    <?php foreach ($data1 as $row): ?>
+    <?php foreach ($data9 as $row): ?>
         <tr>
             <td><?php echo $row['nombre01']; ?></td>
             <td><?php echo $row['apellido01']; ?></td>
@@ -155,6 +155,16 @@ if ($result11) {
         </tr>
     <?php endforeach; ?>
 </table>
+<form method="post" action="generate_pdf.php">
+    <input type="hidden" name="consulta" value="9">
+    <input type="hidden" name="filename" value="consulta9.pdf">
+    <?php foreach ($data9 as $row): ?>
+        <?php foreach ($row as $key => $value): ?>
+            <input type="hidden" name="data9[<?php echo $row['nombre01']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+    <button type="submit" class="generate-pdf-button">Generar PDF</button>
+</form>
 
     <h2>Consulta 2: </h2>
 <h3>Encontrar los empleados que han atendido todos los tipos de productos/servicios</h3>
@@ -163,13 +173,23 @@ if ($result11) {
         <th>Nombre empleado</th>
         <th>Apellido empleado</th>
     </tr>
-    <?php foreach ($data2 as $row): ?>
+    <?php foreach ($data10 as $row): ?>
         <tr>
             <td><?php echo $row['nombre01']; ?></td>
             <td><?php echo $row['apellido01']; ?></td>
         </tr>
     <?php endforeach; ?>
 </table>
+<form method="post" action="generate_pdf.php">
+    <input type="hidden" name="consulta" value="10">
+    <input type="hidden" name="filename" value="consulta10.pdf">
+    <?php foreach ($data10 as $row): ?>
+        <?php foreach ($row as $key => $value): ?>
+            <input type="hidden" name="data10[<?php echo $row['nombre01']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+    <button type="submit" class="generate-pdf-button">Generar PDF</button>
+</form>
 
 <h2>Consulta 3: </h2>
 <h3>Mostrar los clientes que han gastado más que el promedio en facturas</h3>
@@ -181,7 +201,7 @@ if ($result11) {
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($data3 as $row): ?>
+        <?php foreach ($data11 as $row): ?>
             <tr style="border-bottom: 1px solid #ddd;">
                 <td style="padding: 10px;"><?php echo $row['nombre01']; ?></td>
                 <td style="padding: 10px;"><?php echo $row['apellido01']; ?></td>
@@ -189,5 +209,15 @@ if ($result11) {
         <?php endforeach; ?>
     </tbody>
 </table>
+<form method="post" action="generate_pdf.php">
+    <input type="hidden" name="consulta" value="11">
+    <input type="hidden" name="filename" value="consulta11.pdf">
+    <?php foreach ($data11 as $row): ?>
+        <?php foreach ($row as $key => $value): ?>
+            <input type="hidden" name="data11[<?php echo $row['nombre01']; ?>][<?php echo $key; ?>]" value="<?php echo $value; ?>">
+        <?php endforeach; ?>
+    <?php endforeach; ?>
+    <button type="submit" class="generate-pdf-button">Generar PDF</button>
+</form>
 </body>
 </html>

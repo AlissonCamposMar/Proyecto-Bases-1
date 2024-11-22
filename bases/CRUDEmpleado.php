@@ -186,12 +186,6 @@ if (!$query_cargos) {
         color: white;
         left: 10px; /* Posición izquierda para el botón de menú */
     }
-
-    #graficaButton {
-        background-color: #4285f4;
-        color: white;
-        left: 100px; /* Posición izquierda para el botón de gráfica */
-    }
 </style>
 
 <script>
@@ -208,17 +202,6 @@ if (!$query_cargos) {
 
         document.body.appendChild(menuButton);
 
-        // Botón de gráfica
-        var graficaButton = document.createElement('button');
-        graficaButton.textContent = 'GRAFICA';
-        graficaButton.className = 'menuButton'; // Cambiado de id a className
-        graficaButton.id = 'graficaButton';
-
-        graficaButton.addEventListener('click', function () {
-            window.location.href = 'graficoEmpleado.php';
-        });
-
-        document.body.appendChild(graficaButton);
     });
 </script>
 </head>
@@ -302,16 +285,16 @@ if (!$query_cargos) {
             // Obtener datos del cliente, teléfono y residencia para prellenar el formulario
             $id_Empleado_editar = $_GET['editar'];
             $sql_editar = "SELECT empleado.*, telefono.numero, cargo.nombre
-                            FROM empleado
-                            LEFT JOIN telefono ON empleado.id_Empleado = telefono.id_Empleado
-                            LEFT JOIN cargo ON empleado.id_Cargo = cargo.id_Cargo
-                            WHERE empleado.id_Empleado = '$id_Empleado_editar'";
+            FROM empleado
+            LEFT JOIN telefono ON empleado.id_Empleado = telefono.id_Empleado
+            LEFT JOIN cargo ON empleado.id_Cargo = cargo.id_Cargo
+            WHERE empleado.id_Empleado = '$id_Empleado_editar'";
             $result_editar = mysqli_query($con, $sql_editar);
             $empleado_editar = mysqli_fetch_assoc($result_editar);
             ?>
             <div>
-                <h2 class="mt-4 mb-2">Editar Empleado - ID <?= $empleado_editar['id_Empleado'] ?></h2>
-                <form method="post" action="" class="mb-4">
+                <h2>Editar Empleado - ID <?= $empleado_editar['id_Empleado'] ?></h2>
+                <form method="post" action="">
                     <label for="cargo_editar">Cargo:</label>
                     <select name="cargo_editar">
                         <?php
@@ -340,7 +323,7 @@ if (!$query_cargos) {
                     <label for="apellido01_editar">Primer Apellido:</label>
                     <input type="text" name="apellido01_editar" value="<?= $empleado_editar['apellido01'] ?>">
                     
-                    <label for="apellid0o2_editar">Segundo Apellido:</label>
+                    <label for="apellido02_editar">Segundo Apellido:</label>
                     <input type="text" name="apellido02_editar" value="<?= $empleado_editar['apellido02'] ?>">
                     
                     <label for="correo_electronico_editar">Correo Electronico:</label>

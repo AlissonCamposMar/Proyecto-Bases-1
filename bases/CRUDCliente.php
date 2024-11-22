@@ -14,118 +14,149 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $apellido02_editar = $_POST['apellido02_editar'];
         $fecha_nacimiento_editar = $_POST['fecha_nacimiento_editar'];
         $residencia_editar = $_POST['residencia_editar'];
-        $numero_editar = $_POST['telefonos_editar'];
-        $enfermedades_editar = $_POST['enfermedades'];
-        $alergias_editar = $_POST['alergias'];
+        $numero_editar = $_POST['numero_editar'];
+        $enfermedades_editar = isset($_POST['enfermedades']) ? $_POST['enfermedades'] : [];
+        $alergias_editar = isset($_POST['alergias']) ? $_POST['alergias'] : [];
         
         
 
         // Actualizar datos en la tabla cliente
         $sql_actualizar_cliente = "UPDATE cliente
-                                   SET nombre01 = '$nombre01_editar', 
-                                       nombre02 = '$nombre02_editar',
-                                       apellido01 = '$apellido01_editar',
-                                       apellido02 = '$apellido02_editar',
+                                   SET nombre01 = '$nombre01_editar',nombre02 = '$nombre02_editar',
+                                       apellido01 = '$apellido01_editar',apellido02 = '$apellido02_editar',
                                        fecha_nacimiento = '$fecha_nacimiento_editar',
                                        residencia = '$residencia_editar'
                                    WHERE id_Cliente = '$id_Cliente_editar'";
         $result_actualizar_cliente = mysqli_query($con, $sql_actualizar_cliente);
 
-        // Actualizar relaciones de enfermedades
-        // Primero eliminamos las enfermedades existentes para el cliente
-        $sql_eliminar_enfermedades = "DELETE FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_editar'";
-        mysqli_query($con, $sql_eliminar_enfermedades);
+        // Actualizar datos en la tabla telefono
+        $sql_actualizar_telefono = "UPDATE telefono
+                                     SET nombre = '$numero_editar'
+                                     WHERE id_Cliente = '$id_Cliente_editar'";
+        $result_actualizar_telefono = mysqli_query($con, $sql_actualizar_telefono);
 
-        // Ahora insertamos las nuevas relaciones de enfermedades
-        if (!empty($enfermedades_editar)) {
-            foreach ($enfermedades_editar as $id_Enfermedad) {
-                $sql_insertar_enfermedad = "INSERT INTO clienteEnfermedad (id_Cliente, id_Enfermedad) 
-                                            VALUES ('$id_Cliente_editar', '$id_Enfermedad')";
-                $result_actualizar_enfermedades = mysqli_query($con, $sql_insertar_enfermedad);
-            }
+        // Actualizar enfermedades: Eliminar las enfermedades anteriores y agregar las nuevas
+if (!empty($enfermedades_editar)) {
+    // Eliminar las enfermedades actuales del cliente
+    $sql_eliminar_enfermedades = "DELETE FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_editar'";
+    $result_eliminar_enfermedades = mysqli_query($con, $sql_eliminar_enfermedades);
+    if (!$result_eliminar_enfermedades) {
+        die("Error al eliminar enfermedades: " . mysqli_error($con));
+    }
+
+    // Insertar las nuevas enfermedades asociadas al cliente
+    foreach ($enfermedades_editar as $id_enfermedad) {
+        $id_enfermedad = mysqli_real_escape_string($con, $id_enfermedad);
+        $sql_insertar_enfermedad = "INSERT INTO clienteEnfermedad (id_Cliente, id_Enfermedad) VALUES ('$id_Cliente_editar', '$id_enfermedad')";
+        $result_insertar_enfermedad = mysqli_query($con, $sql_insertar_enfermedad);
+        if (!$result_insertar_enfermedad) {
+            die("Error al insertar enfermedad: " . mysqli_error($con));
         }
+    }
+}
 
-        // Actualizar relaciones de enfermedades
-        // Primero eliminamos las enfermedades existentes para el cliente
-        $sql_eliminar_alergias = "DELETE FROM clienteAlergia WHERE id_Cliente = '$id_Cliente_editar'";
-        mysqli_query($con, $sql_eliminar_alergias);
+        // Actualizar alergias: Eliminar las alergias anteriores y agregar las nuevas
+if (!empty($alergias_editar)) {
+    // Eliminar las alergias actuales del cliente
+    $sql_eliminar_alergias = "DELETE FROM clienteAlergia WHERE id_Cliente = '$id_Cliente_editar'";
+    $result_eliminar_alergias = mysqli_query($con, $sql_eliminar_alergias);
+    if (!$result_eliminar_alergias) {
+        die("Error al eliminar alergias: " . mysqli_error($con));
+    }
 
-        // Ahora insertamos las nuevas relaciones de enfermedades
-        if (!empty($alergias_editar)) {
-            foreach ($alergias_editar as $id_Alergia) {
-                $sql_insertar_alergia= "INSERT INTO clienteAlergia (id_Cliente, id_Alergia) 
-                                        VALUES ('$id_Cliente_editar', '$id_Alergia')";
-                $result_actualizar_alergias = mysqli_query($con, $sql_insertar_alergia);
-            }
+    // Insertar las nuevas alergias asociadas al cliente
+    foreach ($alergias_editar as $id_alergia) {
+        $id_alergia = mysqli_real_escape_string($con, $id_alergia);
+        $sql_insertar_alergia = "INSERT INTO clienteAlergia (id_Cliente, id_Alergia) VALUES ('$id_Cliente_editar', '$id_alergia')";
+        $result_insertar_alergia = mysqli_query($con, $sql_insertar_alergia);
+        if (!$result_insertar_alergia) {
+            die("Error al insertar alergia: " . mysqli_error($con));
         }
+    }
+}
 
-        // Eliminar teléfonos existentes
-        $sql_eliminar_telefonos = "DELETE FROM telefono WHERE id_Cliente = '$id_Cliente_editar'";
-        mysqli_query($con, $sql_eliminar_telefonos);
+        // Verificar si el usuario tiene un número de teléfono relacionado
+        $sql_verificar_telefono = "SELECT * FROM telefono WHERE id_Cliente = '$id_Cliente_editar'";
+        $result_verificar_telefono = mysqli_query($con, $sql_verificar_telefono);
 
-        // Insertar teléfonos actualizados
-        if (!empty($_POST['telefonos_editar'])) {
-            foreach ($_POST['telefonos_editar'] as $telefono) {
-                if (!empty($telefono)) {
-                    $sql_insertar_telefono = "INSERT INTO telefono (numero, id_Cliente) VALUES ('$telefono', '$id_Cliente_editar')";
-                    $result_actualizar_telefono = mysqli_query($con, $sql_insertar_telefono);
+        if ($result_verificar_telefono !== false) {
+            // Verificar si ya tiene un número de teléfono relacionado
+            if (mysqli_num_rows($result_verificar_telefono) > 0) {
+                // Si ya tiene un número de teléfono, actualizarlo
+                $sql_actualizar_telefono = "UPDATE telefono
+                                             SET numero = '$numero_editar'
+                                             WHERE id_Cliente = '$id_Cliente_editar'";
+                $result_actualizar_telefono = mysqli_query($con, $sql_actualizar_telefono);
+
+                // Verificar si la actualización fue exitosa
+                if (!$result_actualizar_telefono) {
+                    echo "Error al actualizar el número de teléfono: " . mysqli_error($con);
+                }
+            } else {
+                // Si no tiene un número de teléfono, entonces insertarlo
+                $sql_insertar_telefono = "INSERT INTO telefono (id_Cliente, numero) VALUES ('$id_Cliente_editar', '$numero_editar')";
+                $result_insertar_telefono = mysqli_query($con, $sql_insertar_telefono);
+
+                // Verificar si la inserción fue exitosa
+                if (!$result_insertar_telefono) {
+                    echo "Error al insertar el número de teléfono: " . mysqli_error($con);
                 }
             }
+        } else {
+            echo "Error en la consulta de verificación de teléfono: " . mysqli_error($con);
         }
 
         // Verifica si cada consulta fue exitosa
-        ob_start();
-        if ($result_actualizar_cliente) {
-            echo "Cliente actualizado correctamente.<br>";
-        } else {
-            echo "Error al actualizar cliente: " . mysqli_error($con) . "<br>";
-        }
+if ($result_actualizar_cliente) {
+    echo "Cliente actualizado correctamente.<br>";
+} else {
+    echo "Error al actualizar cliente: " . mysqli_error($con) . "<br>";
+}
 
-        if ($result_actualizar_telefono) {
-            echo "Teléfono actualizado correctamente.<br>";
-        } else {
-            echo "Error al actualizar teléfono: " . mysqli_error($con) . "<br>";
-        }
+if ($result_actualizar_telefono) {
+    echo "Teléfono actualizado correctamente.<br>";
+} else {
+    echo "Error al actualizar teléfono: " . mysqli_error($con) . "<br>";
+}
 
-        if ($result_actualizar_enfermedades) {
-            echo "Enfermedad actualizada correctamente.<br>";
-        } else {
-            echo "Error al actualizar enfermedad: " . mysqli_error($con) . "<br>";
-        }
-
-        if ($result_actualizar_alergias) {
-            echo "Alergia(s) actualizada correctamente.<br>";
-        } else {
-            echo "Error al actualizar alergia(s): " . mysqli_error($con) . "<br>";
-        }
 
 
         // Verificar si todas las consultas fueron exitosas
-        if ($result_actualizar_cliente && $result_actualizar_telefono && $result_actualizar_enfermedades && $result_actualizar_alergias) {
+        if ($result_actualizar_cliente && $result_actualizar_telefono) {
             // Redirigir a la página de clientes después de la actualización
             header("Location: CRUDCliente.php");
             exit();
         } else {
             echo "Error al actualizar datos: " . mysqli_error($con);
         }
-        ob_end_flush();
     } elseif (isset($_POST['eliminar'])) {
         // Lógica de eliminación
         $id_Cliente_eliminar = $_POST['id_Cliente_eliminar'];
 
-        
         // Eliminar datos de la tabla telefono
         $sql_eliminar_telefono = "DELETE FROM telefono WHERE id_Cliente = '$id_Cliente_eliminar'";
         $result_eliminar_telefono = mysqli_query($con, $sql_eliminar_telefono);
 
-        // Eliminar datos de la tabla enfermedad
-        $sql_eliminar_cliente_enfermedad = "DELETE FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_eliminar'";
-        $result_eliminar_cliente_enfermedad = mysqli_query($con, $sql_eliminar_cliente_enfermedad);
+       // Eliminar las enfermedades asociadas al cliente
+$sql_eliminar_cliente_enfermedad = "DELETE FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_eliminar'";
+$result_eliminar_cliente_enfermedad = mysqli_query($con, $sql_eliminar_cliente_enfermedad);
+if (!$result_eliminar_cliente_enfermedad) {
+    die("Error al eliminar enfermedades asociadas al cliente: " . mysqli_error($con));
+}
 
-        // Eliminar datos de la tabla cliente
-        $sql_eliminar_cliente = "DELETE FROM cliente WHERE id_Cliente = '$id_Cliente_eliminar'";
-        $result_eliminar_cliente = mysqli_query($con, $sql_eliminar_cliente);
+// Eliminar las alergias asociadas al cliente
+$sql_eliminar_cliente_alergia = "DELETE FROM clienteAlergia WHERE id_Cliente = '$id_Cliente_eliminar'";
+$result_eliminar_cliente_alergia = mysqli_query($con, $sql_eliminar_cliente_alergia);
+if (!$result_eliminar_cliente_alergia) {
+    die("Error al eliminar alergias asociadas al cliente: " . mysqli_error($con));
+}
 
+// Ahora eliminar al cliente de la tabla principal (si es necesario)
+$sql_eliminar_cliente = "DELETE FROM cliente WHERE id_Cliente = '$id_Cliente_eliminar'";
+$result_eliminar_cliente = mysqli_query($con, $sql_eliminar_cliente);
+if (!$result_eliminar_cliente) {
+    die("Error al eliminar cliente: " . mysqli_error($con));
+}
 
         // Verificar si la eliminación fue exitosa
         if ($result_eliminar_cliente && $result_eliminar_telefono) {
@@ -137,98 +168,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
           // Verificar que todos los campos obligatorios están llenos
-    $required_fields = ['id_Cliente', 'nombre01', 'apellido01', 'fecha_nacimiento','residencia', 'telefonos'];
+    $required_fields = ['id_Cliente', 'nombre01','nombre02', 'apellido01','apellido02', 'fecha_nacimiento','residencia','telefono'];
 
     foreach ($required_fields as $field) {
         if (empty($_POST[$field])) {
-
-            $field_label = isset($field_labels[$field]) ? $field_labels[$field] : $field;
             // Mostrar ventana de advertencia
-            echo "<script>alert('Por favor, llene el campo obligatorio: $field_label.');</script>";
+            echo "<script>alert('Por favor, llene todos los campos obligatorios.');</script>";
             echo "<script>window.location.href='CRUDCliente.php';</script>";
             exit; // Detener la ejecución si faltan datos
         }
     }
-        // Lógica de inserción (la parte que maneja el formulario de agregar cliente)
-        $id_Cliente = $_POST['id_Cliente'];
-        $nombre01 = $_POST['nombre01'];
-        $nombre02 = $_POST['nombre02'];
-        $apellido01 = $_POST['apellido01'];
-        $apellido02 = $_POST['apellido02'];
-        $fecha_nacimiento = $_POST['fecha_nacimiento'];
-        $residencia = $_POST['residencia'];
-        $numero = $_POST['telefonos'];
-        $enfermedad = $_POST['enfermedades'];
-        $alergia = $_POST['alergias'];
-
-        // Insertar en la tabla cliente
-        $sql_cliente = "INSERT INTO cliente (id_Cliente, nombre01, nombre02, apellido01, apellido02, fecha_nacimiento, residencia) 
-                        VALUES ('$id_Cliente', '$nombre01', '$nombre02', '$apellido01', '$apellido02', '$fecha_nacimiento', '$residencia')";
-        $result_cliente = mysqli_query($con, $sql_cliente);
-
-        //Insertar en la tabla telefono
-        // Manejar la inserción de múltiples teléfonos
-        if (!empty($_POST['telefonos'])) {
-            foreach ($_POST['telefonos'] as $telefono) {
-                if (!empty($telefono)) {
-                    $sql_telefono = "INSERT INTO telefono (numero, id_Cliente) VALUES ('$telefono', '$id_Cliente')";
-                    $result_telefono = mysqli_query($con, $sql_telefono);
-
-                    if (!$result_telefono) {
-                        die("Error al insertar teléfono: " . mysqli_error($con));
-                    }
-                }
-            }
-        }
-
-// Insertar en la tabla cliente enfermedad
-if (!empty($_POST['enfermedades'])) {
-    foreach ($_POST['enfermedades'] as $id_enfermedad) {
-        if (!empty($id_enfermedad)) {
-            // Insertar la relación en la tabla clienteEnfermedad
+    $id_Cliente = $_POST['id_Cliente'];
+    $nombre01 = $_POST['nombre01'];
+    $nombre02 = $_POST['nombre02'];
+    $apellido01 = $_POST['apellido01'];
+    $apellido02 = $_POST['apellido02'];
+    $fecha_nacimiento = $_POST['fecha_nacimiento'];
+    $residencia = $_POST['residencia'];
+    $numero = $_POST['telefono'];
+    $enfermedades = isset($_POST['enfermedades']) ? $_POST['enfermedades'] : []; // Asegurarse de que es un arreglo
+    $alergias = isset($_POST['alergias']) ? $_POST['alergias'] : []; // Asegurarse de que es un arreglo
+    
+    // Insertar en la tabla cliente
+    $sql_cliente = "INSERT INTO cliente (id_Cliente, nombre01, nombre02, apellido01, apellido02, fecha_nacimiento, residencia) 
+                    VALUES ('$id_Cliente', '$nombre01', '$nombre02', '$apellido01', '$apellido02', '$fecha_nacimiento', '$residencia')";
+    $result_cliente = mysqli_query($con, $sql_cliente);
+    
+    // Verificar si la inserción en cliente fue exitosa
+    if (!$result_cliente) {
+        die("Error al insertar cliente: " . mysqli_error($con));
+    }
+    
+    // Insertar en la tabla telefono
+    $sql_telefono = "INSERT INTO telefono (numero, id_Cliente) 
+                     VALUES ('$numero','$id_Cliente')";
+    $result_telefono = mysqli_query($con, $sql_telefono);
+    
+    // Verificar si la inserción en telefono fue exitosa
+    if (!$result_telefono) {
+        die("Error al insertar teléfono: " . mysqli_error($con));
+    }
+    
+    // Insertar las enfermedades en la tabla clienteEnfermedad
+    if (!empty($enfermedades)) {
+        foreach ($enfermedades as $id_Enfermedad) {
             $sql_cliente_enfermedad = "INSERT INTO clienteEnfermedad (id_Cliente, id_Enfermedad) 
-            VALUES ('$id_Cliente', '$id_enfermedad')";
+                                       VALUES ('$id_Cliente', '$id_Enfermedad')";
             $result_cliente_enfermedad = mysqli_query($con, $sql_cliente_enfermedad);
-
+    
             if (!$result_cliente_enfermedad) {
-                die("Error al insertar relación cliente-enfermedad: " . mysqli_error($con));
+                die("Error al insertar enfermedad: " . mysqli_error($con));
             }
         }
     }
-}
-
-// Insertar en la tabla cliente alergia
-if (!empty($_POST['alergias'])) {
-    foreach ($_POST['alergias'] as $id_alergia) {
-        if (!empty($id_alergia)) {
-            // Insertar la relación en la tabla clienteAlergia
-            $sql_cliente_alergias = "INSERT INTO clienteAlergia (id_Cliente, id_Alergia) 
-            VALUES ('$id_Cliente', '$id_alergia')";
-            $result_cliente_alergias = mysqli_query($con, $sql_cliente_alergias);
-
-            if (!$result_cliente_alergias) {
-                die("Error al insertar relación cliente-alergia: " . mysqli_error($con));
+    
+    // Insertar las alergias en la tabla clienteAlergia
+    if (!empty($alergias)) {
+        foreach ($alergias as $id_Alergia) {
+            $sql_cliente_alergia = "INSERT INTO clienteAlergia (id_Cliente, id_Alergia) 
+                                    VALUES ('$id_Cliente', '$id_Alergia')";
+            $result_cliente_alergia = mysqli_query($con, $sql_cliente_alergia);
+    
+            if (!$result_cliente_alergia) {
+                die("Error al insertar alergia: " . mysqli_error($con));
             }
         }
     }
-}
-
-
-        // Obtener el id_Cliente recién insertado
-        $id_Cliente_insertado = mysqli_insert_id($con);
-
-        if (!$result_cliente) {
-            die("Error al insertar datos: " . mysqli_error($con));
-        }
+    
+    // Si todo fue exitoso
+    echo "Datos insertados correctamente.";
     }
 }
 
 // Consulta para obtener los datos
-$sql = "SELECT
-            cliente.*,
-            GROUP_CONCAT(DISTINCT telefono.numero SEPARATOR ', ') AS telefonos,
-            GROUP_CONCAT(DISTINCT enfermedad.nombre SEPARATOR ', ') AS enfermedades,
-            GROUP_CONCAT(DISTINCT alergia.nombre SEPARATOR ', ') AS alergias
+$sql = "SELECT cliente.*, telefono.numero, 
+                GROUP_CONCAT(DISTINCT enfermedad.nombre) AS enfermedades,
+                GROUP_CONCAT(DISTINCT alergia.nombre) AS alergias
         FROM cliente
         LEFT JOIN telefono ON cliente.id_Cliente = telefono.id_Cliente
         LEFT JOIN clienteEnfermedad ON cliente.id_Cliente = clienteEnfermedad.id_Cliente
@@ -241,23 +256,6 @@ $query = mysqli_query($con, $sql);
 if (!$query) {
     die("Error en la consulta: " . mysqli_error($con));
 }
-
-// Obtener todas las enfermedades para el campo <select>
-$sql_enfermedades = "SELECT id_Enfermedad, nombre FROM enfermedad";
-$result_enfermedades = mysqli_query($con, $sql_enfermedades);
-
-if (!$result_enfermedades) {
-    die("Error al obtener enfermedades: " . mysqli_error($con));
-}
-
-// Obtener todas las alergias para el campo <select>
-$sql_alergias = "SELECT id_Alergia, nombre FROM alergia";
-$result_alergias = mysqli_query($con, $sql_alergias);
-
-if (!$result_alergias) {
-    die("Error al obtener alergias: " . mysqli_error($con));
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -320,7 +318,7 @@ if (!$result_alergias) {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="nombre02">Segundo Nombre</label>
-                    <input type="text" name="nombre02" class="form-control" placeholder="Segundo Nombre">
+                    <input type="text" name="nombre02" class="form-control" placeholder="Segundo Nombre" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="apellido01">Primer Apellido</label>
@@ -328,7 +326,7 @@ if (!$result_alergias) {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="apellido02">Segundo Apellido</label>
-                    <input type="text" name="apellido02" class="form-control" placeholder="Segundo Apellido">
+                    <input type="text" name="apellido02" class="form-control" placeholder="Segundo Apellido" required>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="fecha_nacimiento">Fecha de nacimiento:</label>
@@ -339,38 +337,42 @@ if (!$result_alergias) {
                     <input type="text" name="residencia" class="form-control" placeholder="Residencia" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="telefonos">Teléfonos</label>
-                    <div id="telefono-container">
-                        <div class="input-group mb-2">
-                            <input type="text" name="telefonos[]" class="form-control" placeholder="Teléfono">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-success" id="add-telefono">+</button>
-                            </div>
-                        </div>
-                    </div>
+                    <label for="telefono">Telefono</label>
+                    <input type="text" name="telefono" class="form-control" placeholder="Telefono" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="enfermedades">Enfermedad(es)</label>
-                    <select name="enfermedades[]" id="enfermedades" class="form-control" multiple required>
-                        <?php
-                        // Llenar el <select> con las enfermedades desde la base de datos
-                        while ($row = mysqli_fetch_assoc($result_enfermedades)) {
-                            echo "<option value='" . $row['id_Enfermedad'] . "'>" . htmlspecialchars($row['nombre']) . "</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="alergias">Alergia(s)</label>
-                    <select name="alergias[]" id="alergias" class="form-control" multiple required>
-                        <?php
-                        // Llenar el <select> con las alergias desde la base de datos
-                        while ($row = mysqli_fetch_assoc($result_alergias)) {
-                            echo "<option value='" . $row['id_Alergia'] . "'>" . htmlspecialchars($row['nombre']) . "</option>";
-                        }
-                        ?>
-                    </select>
-                </div> <!-- TERMINAR DE REVISAR -->
+    <label for="enfermedades">Enfermedad(es)</label>
+    <select name="enfermedades[]" id="enfermedades" class="form-control" multiple required>
+        <option value="" disabled>Seleccionar enfermedad(es)</option>
+        <?php
+        // Obtener las enfermedades de la base de datos
+        $query_enfermedades = "SELECT * FROM enfermedad";
+        $result_enfermedades = mysqli_query($con, $query_enfermedades);
+
+        // Mostrar todas las enfermedades como opciones
+        while ($enfermedad = mysqli_fetch_assoc($result_enfermedades)) {
+            echo "<option value='" . $enfermedad['id_Enfermedad'] . "'>" . htmlspecialchars($enfermedad['nombre']) . "</option>";
+        }
+        ?>
+    </select>
+</div>
+
+<div class="form-group col-md-6">
+    <label for="alergias">Alergia(s)</label>
+    <select name="alergias[]" id="alergias" class="form-control" multiple required>
+        <option value="" disabled>Seleccionar alergia(s)</option>
+        <?php
+        // Obtener las alergias de la base de datos
+        $query_alergias = "SELECT * FROM alergia";
+        $result_alergias = mysqli_query($con, $query_alergias);
+
+        // Mostrar todas las alergias como opciones
+        while ($alergia = mysqli_fetch_assoc($result_alergias)) {
+            echo "<option value='" . $alergia['id_Alergia'] . "'>" . htmlspecialchars($alergia['nombre']) . "</option>";
+        }
+        ?>
+    </select>
+</div> <!-- TERMINAR DE REVISAR -->
             </div>
             <button type="submit" class="btn btn-primary">Agregar cliente</button>
         </form>
@@ -389,8 +391,8 @@ if (!$result_alergias) {
                         <th>Fecha de nacimiento</th>
                         <th>Residencia</th>
                         <th>Telefono</th>
-                        <th>Enfermedad(es)</th>
-                        <th>Alergia(es)</th>
+                        <th>Enfermedad</th>
+                        <th>Alergia</th>
                         
                         <th colspan="2">Acciones</th>
                     </tr>
@@ -405,7 +407,7 @@ if (!$result_alergias) {
                             <td><?= $row['apellido02'] ?></td>
                             <td><?= $row['fecha_nacimiento'] ?></td>
                             <td><?= $row['residencia'] ?></td>
-                            <td><?= $row['telefonos'] ?></td>
+                            <td><?= $row['numero'] ?></td>
                             <td><?= $row['enfermedades'] ?></td>
                             <td><?= $row['alergias'] ?></td>
                             
@@ -429,8 +431,7 @@ if (!$result_alergias) {
         <?php
         // Obtener datos del cliente, teléfono y residencia para prellenar el formulario
         $id_Cliente_editar = $_GET['editar'];
-        $sql_editar = "SELECT cliente.*, 
-                GROUP_CONCAT(DISTINCT telefono.numero SEPARATOR ', ') AS telefonos,
+        $sql_editar = "SELECT cliente.*, telefono.numero, 
                 GROUP_CONCAT(DISTINCT enfermedad.nombre) AS enfermedades,
                 GROUP_CONCAT(DISTINCT alergia.nombre) AS alergias
         FROM cliente
@@ -443,28 +444,7 @@ if (!$result_alergias) {
         GROUP BY cliente.id_Cliente";
         $result_editar = mysqli_query($con, $sql_editar);
         $cliente_editar = mysqli_fetch_assoc($result_editar);
-        
-        // Obtener las enfermedades asociadas al cliente
-        $sql_enfermedades_cliente = "SELECT id_Enfermedad FROM clienteEnfermedad WHERE id_Cliente = '$id_Cliente_editar'";
-        $result_enfermedades_cliente = mysqli_query($con, $sql_enfermedades_cliente);
-
-        // Crear un array con los IDs de enfermedades seleccionadas
-        $enfermedades_seleccionadas = [];
-        while ($row = mysqli_fetch_assoc($result_enfermedades_cliente)) {
-            $enfermedades_seleccionadas[] = $row['id_Enfermedad'];
-        }
-
-        // Obtener las alergias asociadas al cliente
-        $sql_alergias_cliente = "SELECT id_Alergia FROM clienteAlergia WHERE id_Cliente = '$id_Cliente_editar'";
-        $result_alergias_cliente = mysqli_query($con, $sql_alergias_cliente);
-
-        // Crear un array con los IDs de alergias seleccionadas
-        $alergias_seleccionadas = [];
-        while ($row = mysqli_fetch_assoc($result_alergias_cliente)) {
-            $alergias_seleccionadas[] = $row['id_Alergia'];
-        }
-        
-    ?>
+        ?>
             <div>
                 <h2 class="mt-4 mb-2">Editar Usuario - ID <?= $cliente_editar['id_Cliente'] ?></h2>
                 <form method="post" action="" class="mb-4">
@@ -479,7 +459,7 @@ if (!$result_alergias) {
                         </div>
                         <div class="form-group col-md-6">
                             <label for="nombre02_editar">Segundo Nombre</label>
-                            <input type="text" name="nombre02_editar" class="form-control" value="<?= $cliente_editar['nombre02'] ?>">
+                            <input type="text" name="nombre02_editar" class="form-control" value="<?= $cliente_editar['nombre02'] ?>" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="apellido01_editar">Primer Apellido:</label>
@@ -487,63 +467,55 @@ if (!$result_alergias) {
                         </div>
                         <div class="form-group col-md-6">
                             <label for="apellido02_editar">Segundo Apellido:</label>
-                            <input type="text" name="apellido02_editar" class="form-control" value="<?= $cliente_editar['apellido02'] ?>">
+                            <input type="text" name="apellido02_editar" class="form-control" value="<?= $cliente_editar['apellido02'] ?>" required>
                         </div>    
                         <div class="form-group col-md-6">
                             <label for="fecha_nacimiento_editar">Fecha de nacimiento:</label>
                             <input type="date" name="fecha_nacimiento_editar" class="form-control" value="<?= $cliente_editar['fecha_nacimiento'] ?>">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="enfermedades">Enfermedad(es)</label>
-                            <select name="enfermedades[]" id="enfermedades" class="form-control" multiple required>
-                                <?php
-                                // Mostrar todas las enfermedades y marcar las seleccionadas
-                                mysqli_data_seek($result_enfermedades, 0); // Reiniciar el puntero del resultado
-                                while ($row = mysqli_fetch_assoc($result_enfermedades)) {
-                                    $selected = in_array($row['id_Enfermedad'], $enfermedades_seleccionadas) ? 'selected' : '';
-                                    echo "<option value='" . $row['id_Enfermedad'] . "' $selected>" . htmlspecialchars($row['nombre']) . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="alergias">Alergia:</label>
-                            <select name="alergias[]" id="alergias" class="form-control" multiple required>
-                                <?php
-                                // Mostrar todas las enfermedades y marcar las seleccionadas
-                                mysqli_data_seek($result_alergias, 0); // Reiniciar el puntero del resultado
-                                while ($row = mysqli_fetch_assoc($result_alergias)) {
-                                    $selected = in_array($row['id_Alergia'], $alergias_seleccionadas) ? 'selected' : '';
-                                    echo "<option value='" . $row['id_Alergia'] . "' $selected>" . htmlspecialchars($row['nombre']) . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label for="telefonos_editar">Teléfonos</label>
-                            <div id="telefono-container-editar">
-                                <?php
-                                    $telefonos = [];
-                                    if (!empty($cliente_editar['telefonos'])) {
-                                        $telefonos = explode(', ', $cliente_editar['telefonos']);
-                                    }
-                                    foreach ($telefonos as $telefono) {
-                                        echo "
-                                        <div class='input-group mb-2'>
-                                            <input type='text' name='telefonos_editar[]' class='form-control' value='$telefono'>
-                                            <div class='input-group-append'>
-                                                <button type='button' class='btn btn-danger remove-telefono'>-</button>
-                                            </div>
-                                        </div>";
-                                    }
-                                ?>
-                                <div class="input-group mb-2">
-                                    <input type="text" name="telefonos_editar[]" class="form-control" placeholder="Teléfono">
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-success" id="add-telefono-editar">+</button>
-                                    </div>
-                                </div>
-                            </div>
+    <label for="enfermedades">Enfermedad(es)</label>
+    <select name="enfermedades[]" id="enfermedades" class="form-control" multiple required>
+        <option value="" disabled>Seleccionar enfermedad(es)</option>
+        <?php
+        // Obtener las enfermedades de la base de datos
+        $query_enfermedades = "SELECT * FROM enfermedad";
+        $result_enfermedades = mysqli_query($con, $query_enfermedades);
+
+        // Obtener las enfermedades del cliente (esto asume que $cliente_editar['enfermedades'] es un array de IDs de enfermedades)
+        $enfermedades_cliente = explode(',', $cliente_editar['enfermedades']); // Suponiendo que las enfermedades están separadas por coma
+
+        // Mostrar todas las enfermedades como opciones y marcar las seleccionadas
+        while ($enfermedad = mysqli_fetch_assoc($result_enfermedades)) {
+            $selected = in_array($enfermedad['id_Enfermedad'], $enfermedades_cliente) ? 'selected' : '';
+            echo "<option value='" . $enfermedad['id_Enfermedad'] . "' $selected>" . htmlspecialchars($enfermedad['nombre']) . "</option>";
+        }
+        ?>
+    </select>
+</div>
+<div class="form-group col-md-6">
+    <label for="alergias">Alergia(s)</label>
+    <select name="alergias[]" id="alergias" class="form-control" multiple required>
+        <option value="" disabled>Seleccionar alergia(s)</option>
+        <?php
+        // Obtener las alergias de la base de datos
+        $query_alergias = "SELECT * FROM alergia";
+        $result_alergias = mysqli_query($con, $query_alergias);
+
+        // Obtener las alergias del cliente (esto asume que $cliente_editar['alergias'] es un array de IDs de alergias)
+        $alergias_cliente = explode(',', $cliente_editar['alergias']); // Suponiendo que las alergias están separadas por coma
+
+        // Mostrar todas las alergias como opciones y marcar las seleccionadas
+        while ($alergia = mysqli_fetch_assoc($result_alergias)) {
+            $selected = in_array($alergia['id_Alergia'], $alergias_cliente) ? 'selected' : '';
+            echo "<option value='" . $alergia['id_Alergia'] . "' $selected>" . htmlspecialchars($alergia['nombre']) . "</option>";
+        }
+        ?>
+    </select>
+</div>
+                        <div class="form-group col-md-6">    
+                            <label for="numero_editar">Número de teléfono:</label>
+                            <input type="text" name="numero_editar" class="form-control" value="<?= $cliente_editar['numero'] ?? '' ?>">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="residencia_editar">Residencia:</label>
@@ -559,54 +531,5 @@ if (!$result_alergias) {
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const telefonoContainer = document.getElementById('telefono-container');
-            const addTelefonoBtn = document.getElementById('add-telefono');
-
-            addTelefonoBtn.addEventListener('click', function () {
-                const newTelefonoInput = document.createElement('div');
-                newTelefonoInput.classList.add('input-group', 'mb-2');
-                newTelefonoInput.innerHTML = `
-                    <input type="text" name="telefonos[]" class="form-control" placeholder="Teléfono">
-                    <div class="input-group-append">
-                        <button type="button" class="btn btn-danger remove-telefono">-</button>
-                    </div>
-                `;
-                telefonoContainer.appendChild(newTelefonoInput);
-
-                // Añadir evento para eliminar campo
-                newTelefonoInput.querySelector('.remove-telefono').addEventListener('click', function () {
-                    telefonoContainer.removeChild(newTelefonoInput);
-                });
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const telefonoContainerEditar = document.getElementById('telefono-container-editar');
-            const addTelefonoEditarBtn = document.getElementById('add-telefono-editar');
-
-            addTelefonoEditarBtn.addEventListener('click', function () {
-                const newTelefonoInput = document.createElement('div');
-                newTelefonoInput.classList.add('input-group', 'mb-2');
-                newTelefonoInput.innerHTML = `
-                    <input type="text" name="telefonos_editar[]" class="form-control" placeholder="Teléfono">
-                    <div class="input-group-append">
-                        <button type="button" class="btn btn-danger remove-telefono">-</button>
-                    </div>
-                `;
-                telefonoContainerEditar.appendChild(newTelefonoInput);
-
-                // Añadir evento para eliminar campo
-                newTelefonoInput.querySelector('.remove-telefono').addEventListener('click', function () {
-                    telefonoContainerEditar.removeChild(newTelefonoInput);
-                });
-            });
-        });
-    </script>
-
 </body>
 </html>
