@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Verificar que todos los campos obligatorios están llenos
-        $required_fields = ['fecha', 'duracion', 'empleado', 'cliente', 'id_Producto'];
+        $required_fields = ['fecha', 'duracion', 'empleado', 'cliente', 'producto'];
 
         foreach ($required_fields as $field) {
             if (empty($_POST[$field])) {
@@ -207,10 +207,10 @@ if (!$query_productos) {
                     <label for="fecha">Fecha:</label>
                     <input type="date" name="fecha" class="form-control" placeholder="AAAA/MM/DD" required>
                 </div>
-                <!-- Campo de duración -->
+                <!-- Campo de hora -->
                 <div class="form-group col-md-6">
                     <label for="duracion">Duración:</label>
-                    <input type="time" name="duracion" class="form-control" placeholder="00:00:00" required>
+                    <input type="text" name="duracion" class="form-control" required>
                 </div>
                 
 
@@ -218,65 +218,67 @@ if (!$query_productos) {
             <button type="submit" class="btn btn-primary">Agregar cita</button>
         </form>
 
-            <!-- Visualización de citas registradas-->
-            <div>
-                <h2 class="mb-3">Citas registradas</h2>
-                <table class="table">
-                    <!-- Encabezado de la tabla -->
-                    <thead>
+        <div id="searchContainer"></div>
+
+        <!-- Visualización de citas registradas-->
+        <div>
+            <h2 class="mb-3">Citas registradas</h2>
+            <table class="table">
+                <!-- Encabezado de la tabla -->
+                <thead>
+                    <tr>
+                        <th>Id Cita</th>
+                        <th>Fecha</th>
+                        <th>Duración</th>
+                        <th>Empleado</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th colspan="2">Acciones</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas de datos de la tabla -->
+                    <?php while ($row = mysqli_fetch_array($query)): ?>
                         <tr>
-                            <th>Id Cita</th>
-                            <th>Fecha</th>
-                            <th>Duración</th>
-                            <th>Empleado</th>
-                            <th>Cliente</th>
-                            <th>Producto</th>
-                            <th colspan="2">Acciones</th>
+                            <td><?= $row['id_Cita'] ?></td>
+                            <td><?= $row['fecha'] ?></td>
+                            <td><?= $row['duracion'] ?></td>
+                            <?php
+                            // Obtener los nombres de empleado, cliente y prooducto utilizando sus IDs
+                            $id_Empleado = $row['id_Empleado'];
+                            $id_Cliente = $row['id_Cliente'];
+                            $id_Producto= $row['id_Producto'];
                             
+                            // Consulta para obtener el nombre del empleado
+                            $query_nombre_empleado = mysqli_query($con, "SELECT CONCAT(nombre01, ' ', apellido01) as nombre_empleado FROM empleado WHERE id_Empleado = '$id_Empleado'");
+                            $nombre_empleado = mysqli_fetch_assoc($query_nombre_empleado)['nombre_empleado'];
+
+                            // Consulta para obtener el nombre del cliente
+                            $query_nombre_cliente = mysqli_query($con, "SELECT CONCAT(nombre01, ' ', apellido01) as nombre_cliente FROM cliente WHERE id_Cliente = '$id_Cliente'");
+                            $nombre_cliente = mysqli_fetch_assoc($query_nombre_cliente)['nombre_cliente'];
+
+                            // Consulta para obtener el nombre del cliente
+                            $query_nombre_producto = mysqli_query($con, "SELECT nombre as nombre_producto FROM producto WHERE id_Producto = '$id_Producto'");
+                            $nombre_producto = mysqli_fetch_assoc($query_nombre_producto)['nombre_producto'];
+                            ?>
+                            <td><?= $nombre_empleado ?></td>
+                            <td><?= $nombre_cliente ?></td>
+                            <td><?= $nombre_producto ?></td>
+                            <td>
+                                <a href="?editar=<?= $row['id_Cita'] ?>" class="btn btn-sm btn-warning">Editar</a>
+                            </td>
+                            <td>
+                                <form method="post" action="">
+                                    <input type="hidden" name="id_Cita_eliminar" value="<?= $row['id_Cita'] ?>">
+                                    <input type="submit" name="eliminar" value="Eliminar" class="btn btn-sm btn-danger">
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Filas de datos de la tabla -->
-                        <?php while ($row = mysqli_fetch_array($query)): ?>
-                            <tr>
-                                <td><?= $row['id_Cita'] ?></td>
-                                <td><?= $row['fecha'] ?></td>
-                                <td><?= $row['duracion'] ?></td>
-                                <?php
-                                // Obtener los nombres de empleado, cliente y prooducto utilizando sus IDs
-                                $id_Empleado = $row['id_Empleado'];
-                                $id_Cliente = $row['id_Cliente'];
-                                $id_Producto= $row['id_Producto'];
-                                
-                                // Consulta para obtener el nombre del empleado
-                                $query_nombre_empleado = mysqli_query($con, "SELECT CONCAT(nombre01, ' ', apellido01) as nombre_empleado FROM empleado WHERE id_Empleado = '$id_Empleado'");
-                                $nombre_empleado = mysqli_fetch_assoc($query_nombre_empleado)['nombre_empleado'];
-
-                                // Consulta para obtener el nombre del cliente
-                                $query_nombre_cliente = mysqli_query($con, "SELECT CONCAT(nombre01, ' ', apellido01) as nombre_cliente FROM cliente WHERE id_Cliente = '$id_Cliente'");
-                                $nombre_cliente = mysqli_fetch_assoc($query_nombre_cliente)['nombre_cliente'];
-
-                                // Consulta para obtener el nombre del cliente
-                                $query_nombre_producto = mysqli_query($con, "SELECT nombre as nombre_producto FROM producto WHERE id_Producto = '$id_Producto'");
-                                $nombre_producto = mysqli_fetch_assoc($query_nombre_producto)['nombre_producto'];
-                                ?>
-                                <td><?= $nombre_empleado ?></td>
-                                <td><?= $nombre_cliente ?></td>
-                                <td><?= $nombre_producto ?></td>
-                                <td>
-                                    <a href="?editar=<?= $row['id_Cita'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                                </td>
-                                <td>
-                                    <form method="post" action="">
-                                        <input type="hidden" name="id_Cita_eliminar" value="<?= $row['id_Cita'] ?>">
-                                        <input type="submit" name="eliminar" value="Eliminar" class="btn btn-sm btn-danger">
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
         
         <!-- Formulario de edición -->
         <?php if (isset($_GET['editar'])): ?>
@@ -336,7 +338,7 @@ if (!$query_productos) {
                             </select>
                         </div>
                         <div class="form-group col-md-6">
-    <label for="producto_editar">Producto:</label>
+    <label for="producto_editar">Servicio:</label>
     <!-- Combo box con ID de producto -->
     <select name="producto_editar" class="form-control">
         <?php
@@ -362,7 +364,7 @@ if (!$query_productos) {
                         <!-- Resto de los campos -->
                         <div class="form-group col-md-6">
                             <label for="fecha_editar">Fecha:</label>
-                            <input type="text" name="fecha_editar" class="form-control" value="<?= $cita_editar['fecha'] ?>">
+                            <input type="date" name="fecha_editar" class="form-control" value="<?= $cita_editar['fecha'] ?>">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="duracion_editar">Duración:</label>
@@ -376,6 +378,38 @@ if (!$query_productos) {
         <?php endif; ?>
     </div>
     <!-- Bootstrap JS y otros scripts -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        // Crear el campo de búsqueda
+        var searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.id = 'searchInput';
+        searchInput.placeholder = 'Buscar...';
+
+        // Agregar un evento de búsqueda
+        searchInput.addEventListener('input', function () {
+            var searchValue = searchInput.value.toLowerCase();
+            filterTableRows(searchValue);
+        });
+
+        // Agregar el campo de búsqueda al header
+        document.getElementById('searchContainer').appendChild(searchInput);
+
+        // Función para filtrar las filas de las tablas
+        function filterTableRows(searchValue) {
+            var tables = document.querySelectorAll('table tbody');
+            tables.forEach(function (table) {
+                var rows = table.querySelectorAll('tr');
+                rows.forEach(function (row) {
+                    var text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchValue) ? '' : 'none';
+                    });
+                });
+            }
+        });
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

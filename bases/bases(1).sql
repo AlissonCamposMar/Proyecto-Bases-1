@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-11-2024 a las 01:43:51
+-- Tiempo de generación: 22-11-2024 a las 02:53:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -206,7 +206,8 @@ INSERT INTO `cliente` (`id_Cliente`, `nombre01`, `nombre02`, `apellido01`, `apel
 (15, 'Daniela', 'Sofía', 'Gutiérrez', 'Orozco', '1999-09-08', 'Barranquilla'),
 (16, 'Sebastián', 'David', 'Vargas', 'Torres', '1988-01-15', 'Cartagena'),
 (17, 'Luar', 'La L', 'Maradona', 'Pele', '2024-11-09', 'Buenos aires'),
-(18, 'Luar', 'Arcangel', '3 letras', 'La maravilla', '2024-11-08', 'Bogota');
+(18, 'Luar', 'Arcangel', '3 letras', 'La maravilla', '2024-11-08', 'Bogota'),
+(19, 'Sandra', 'Maria', 'Idarraga', 'Lopez', '2024-11-07', 'Armenia');
 
 -- --------------------------------------------------------
 
@@ -228,6 +229,7 @@ INSERT INTO `clientealergia` (`id_ClienteAlergia`, `id_Cliente`, `id_Alergia`) V
 (36, 1, 9),
 (2, 2, 1),
 (3, 3, 1),
+(37, 4, 10),
 (21, 6, 3),
 (22, 7, 5),
 (23, 8, 2),
@@ -239,7 +241,7 @@ INSERT INTO `clientealergia` (`id_ClienteAlergia`, `id_Cliente`, `id_Alergia`) V
 (29, 14, 8),
 (30, 15, 11),
 (31, 16, 10),
-(32, 18, 3);
+(38, 19, 4);
 
 -- --------------------------------------------------------
 
@@ -261,7 +263,7 @@ INSERT INTO `clienteenfermedad` (`id_ClienteEnfermedad`, `id_Cliente`, `id_Enfer
 (63, 1, 11),
 (2, 2, 1),
 (15, 3, 7),
-(26, 4, 10),
+(64, 4, 10),
 (43, 6, 7),
 (44, 7, 7),
 (45, 8, 7),
@@ -272,8 +274,7 @@ INSERT INTO `clienteenfermedad` (`id_ClienteEnfermedad`, `id_Cliente`, `id_Enfer
 (50, 13, 4),
 (51, 14, 5),
 (52, 15, 6),
-(53, 16, 8),
-(59, 18, 10);
+(53, 16, 8);
 
 -- --------------------------------------------------------
 
@@ -839,8 +840,6 @@ INSERT INTO `telefono` (`id_Telefono`, `numero`, `id_Empleado`, `id_Cliente`) VA
 (47, '1234567890', NULL, 5),
 (50, '45743356', 2, NULL),
 (58, '326986589', NULL, 3),
-(69, '12342', NULL, 4),
-(70, '345678', NULL, 4),
 (71, '3001234567', NULL, 6),
 (72, '3102345678', NULL, 7),
 (73, '3203456789', NULL, 8),
@@ -854,9 +853,10 @@ INSERT INTO `telefono` (`id_Telefono`, `numero`, `id_Empleado`, `id_Cliente`) VA
 (81, '4001234567', NULL, 16),
 (85, '3698521470', NULL, 17),
 (86, '5236987712', NULL, 17),
-(87, '5236987712', NULL, 18),
 (89, '325697413', NULL, 1),
-(90, '36597451', 3, NULL);
+(90, '36597451', 3, NULL),
+(91, '12342', NULL, 4),
+(92, '9696999', NULL, 4);
 
 --
 -- Índices para tablas volcadas
@@ -1097,13 +1097,13 @@ ALTER TABLE `cliente`
 -- AUTO_INCREMENT de la tabla `clientealergia`
 --
 ALTER TABLE `clientealergia`
-  MODIFY `id_ClienteAlergia` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y alergias', AUTO_INCREMENT=37;
+  MODIFY `id_ClienteAlergia` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y alergias', AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `clienteenfermedad`
 --
 ALTER TABLE `clienteenfermedad`
-  MODIFY `id_ClienteEnfermedad` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y enfermedades', AUTO_INCREMENT=64;
+  MODIFY `id_ClienteEnfermedad` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la relación entre clientes y enfermedades', AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
@@ -1211,7 +1211,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `telefono`
 --
 ALTER TABLE `telefono`
-  MODIFY `id_Telefono` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la tabla telefonos', AUTO_INCREMENT=91;
+  MODIFY `id_Telefono` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Llave primaria autoincrementable de la tabla telefonos', AUTO_INCREMENT=98;
 
 --
 -- Restricciones para tablas volcadas
@@ -1228,7 +1228,6 @@ ALTER TABLE `cita`
 -- Filtros para la tabla `clientealergia`
 --
 ALTER TABLE `clientealergia`
-  ADD CONSTRAINT `ClienteAlergia_Alergia_FK` FOREIGN KEY (`id_Alergia`) REFERENCES `alergia` (`id_Alergia`),
   ADD CONSTRAINT `ClienteAlergia_Cliente_FK` FOREIGN KEY (`id_Cliente`) REFERENCES `cliente` (`id_Cliente`);
 
 --
