@@ -3,7 +3,7 @@ include('conexion.php');
 require_once('fpdf/fpdf.php');
 $con = connection();
 
-//Mostrar los clientes que tienen más citas que el promedio
+//consulta1: Mostrar los clientes que tienen más citas que el promedio
 $query9 =  "SELECT c.nombre01, c.apellido01, COUNT(*) as total_citas
                 FROM cliente c
             JOIN cita ct ON c.id_Cliente = ct.id_Cliente
@@ -32,7 +32,7 @@ if ($result9) {
     echo "Error en la consulta: " . $con->error;
 }
 
-//Encontrar los empleados que han atendido todos los tipos de productos/servicios
+//Consulta:2 Encontrar los empleados que han atendido todos los tipos de productos/servicios
 $query10 =  "SELECT e.nombre01, e.apellido01
                 FROM empleado e
                 WHERE NOT EXISTS (

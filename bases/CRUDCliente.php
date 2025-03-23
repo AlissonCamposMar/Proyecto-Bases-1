@@ -113,7 +113,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Lógica de eliminación
         $id_Cliente_eliminar = $_POST['id_Cliente_eliminar'];
 
-        
+        // Eliminar datos de la tabla alergias
+        $sql_eliminar_cliente_alergias = "DELETE FROM clienteAlergia WHERE id_Cliente = '$id_Cliente_eliminar'";
+        $result_eliminar_cliente_alergias = mysqli_query($con, $sql_eliminar_cliente_alergias);
+
         // Eliminar datos de la tabla telefono
         $sql_eliminar_telefono = "DELETE FROM telefono WHERE id_Cliente = '$id_Cliente_eliminar'";
         $result_eliminar_telefono = mysqli_query($con, $sql_eliminar_telefono);
@@ -351,7 +354,7 @@ if (!$result_alergias) {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="enfermedades">Enfermedad(es)</label>
-                    <select name="enfermedades[]" id="enfermedades" class="form-control" multiple required>
+                    <select name="enfermedades[]" id="enfermedades" class="form-control" multiple>
                         <?php
                         // Llenar el <select> con las enfermedades desde la base de datos
                         while ($row = mysqli_fetch_assoc($result_enfermedades)) {
@@ -362,7 +365,7 @@ if (!$result_alergias) {
                 </div>
                 <div class="form-group col-md-6">
                     <label for="alergias">Alergia(s)</label>
-                    <select name="alergias[]" id="alergias" class="form-control" multiple required>
+                    <select name="alergias[]" id="alergias" class="form-control" multiple>
                         <?php
                         // Llenar el <select> con las alergias desde la base de datos
                         while ($row = mysqli_fetch_assoc($result_alergias)) {
